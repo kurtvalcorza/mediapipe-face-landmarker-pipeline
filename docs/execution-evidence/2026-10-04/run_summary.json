@@ -1,0 +1,63 @@
+{
+  "evidence_class": "LOCAL CPU PRE-FLIGHT - not the clean hosted-runtime (Google Colab) execution required by NOTEBOOK_SPEC 2.2 REL1/REL10",
+  "date": "2026-10-04",
+  "notebook": "tutorials/mediapipe_face_landmarker_colab.ipynb",
+  "notebook_git_blob": "9b8a54dcc45294998578e00dcb7d67e0a27b6203",
+  "generated_from_commit": "e49deff733c8aa7a91cd99d12f9fb4980a181935",
+  "runtime": {
+    "host": "CPU-only Linux x86_64 container, 4 CPUs, no GPU",
+    "kernel_python": "3.11.15",
+    "nbconvert": "7.17.1",
+    "ipykernel": "7.4.0",
+    "isolated_env": {
+      "uv": "0.12.15 (pinned wheel)",
+      "python": "3.12.12, downloaded fresh by uv (empty UV_PYTHON_INSTALL_DIR)",
+      "mediapipe": "1.0.0",
+      "numpy": "2.5.3",
+      "pillow": "12.3.0",
+      "locked_packages": 19
+    }
+  },
+  "runs": [
+    {
+      "name": "default",
+      "procedure": "tools/execute_notebook.py from an empty working directory, no fields set (jupyter nbconvert --execute)",
+      "outcome": "PASS: 13/13 code cells, one pass, no restart, no credential, no upload dialog",
+      "wall_clock_seconds": 120,
+      "executed_copy": "mediapipe_face_landmarker_colab_9b8a54d_local-cpu_default.ipynb"
+    },
+    {
+      "name": "byod-activity",
+      "procedure": "USE_BYOD=True, BYOD_PATH=<zip of two composite faces>, BYOD_NUM_FACES=2, RUN_ACTIVITY=True (ACTIVITY_ROTATION=120)",
+      "outcome": "PASS: BYOD outputs written (1 face per image), data_left_runtime false; activity at 120 deg: detection 0.8, failure 0.8",
+      "wall_clock_seconds": 108,
+      "executed_copy": "mediapipe_face_landmarker_colab_9b8a54d_local-cpu_byod-activity.ipynb"
+    },
+    {
+      "name": "byod-negative",
+      "procedure": "USE_BYOD=True, BYOD_PATH=<zip with a ../escape.jpg member>",
+      "outcome": "REFUSED as intended: RuntimeError: Stage 'byod' failed (exit 2): ValueError: BYOD zip has an unsafe member path '../escape.jpg'; refusing the archive (all canonical cells before it completed)",
+      "wall_clock_seconds": 115
+    }
+  ],
+  "key_results": {
+    "nme_mean": 0.01937,
+    "nme_mean_bootstrap_95ci": [
+      0.01868,
+      0.02006
+    ],
+    "baseline_mean_shape_detector_box_nme_mean": 0.0752,
+    "baseline_mean_shape_image_nme_mean": 0.1532,
+    "detection_rate": 1.0,
+    "smile_pairs_higher": "102/102",
+    "rotate_180": {
+      "detection_rate": 0.9,
+      "failure_rate_at_0.10": 0.9
+    }
+  },
+  "caveats": [
+    "not Colab; paths in the executed copies are local scratch paths",
+    "BYOD inputs were public CC BY composite faces; the Colab upload dialog was not exercised",
+    "one pass, no repeated runs"
+  ]
+}

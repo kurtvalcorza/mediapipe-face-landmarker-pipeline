@@ -41,9 +41,10 @@ The model itself is not executed in CI. It is executed by running the notebook, 
 
 ### Local CPU pre-flight, 2026-10-04 (not hosted-runtime evidence)
 
-- **Subject:** the notebook generated from the working tree that became this repository's first code commit on branch
-  `ccr-24656dfc-ax1ln2` (carried files byte-identical to that commit except for an import reordering in the stage runner
-  applied by `ruff --fix` afterwards). A re-execution against the committed notebook is recorded below when available.
+- **Subject:** `tutorials/mediapipe_face_landmarker_colab.ipynb`, git blob `9b8a54dcc45294998578e00dcb7d67e0a27b6203`,
+  generated from commit `e49deff733c8aa7a91cd99d12f9fb4980a181935` (the carried files are that commit's files byte for
+  byte). The executed copies and `run_summary.json` are in `docs/execution-evidence/2026-10-04/`. An earlier execution of
+  the pre-commit working tree gave identical values.
 - **Runtime:** CPU-only Linux x86_64 container, 4 CPUs, no GPU. Kernel: CPython 3.11.15 with `nbconvert` 7.17.1 and
   `ipykernel` 7.4.0. Stages: the notebook's isolated environment — `uv` 0.12.15 from the pinned wheel, CPython 3.12.12
   downloaded fresh by `uv` (empty `UV_PYTHON_INSTALL_DIR`), the carried lock (19 packages, `mediapipe` 1.0.0, `numpy`
@@ -52,7 +53,7 @@ The model itself is not executed in CI. It is executed by running the notebook, 
   environment or Python), defaults unchanged. Then four copies via `tools/execute_notebook.py` with `USE_BYOD = True`,
   `BYOD_PATH` set (no upload dialog) and `RUN_ACTIVITY = True`.
 - **Observed result (default path):** all 13 code cells completed in one pass, no restart, no credential, 129 s wall
-  clock including the environment build. The bundle was fetched and its four members verified; 327 sample files fetched
+  clock including the environment build (120 s for the committed blob; 129 s for the pre-commit tree). The bundle was fetched and its four members verified; 327 sample files fetched
   and verified; 214 photographs validated; the four refusal probes refused and the greyscale probe accepted with
   `L -> RGB` reported. Walkthrough: 1 face, 478 × 3 landmarks, 52 blendshapes, 4 × 4 matrix; `num_faces` 1 → 1 face and 2 →
   2 faces on the two-face collage; 0 faces on a blank image.
@@ -69,11 +70,11 @@ The model itself is not executed in CI. It is executed by running the notebook, 
     rank AUC 0.948, sign-test p 3.9e-31. Descriptive: `eyeBlink` rose in 91 % of pairs, `eyeSquint` in 89 %.
   - New data: 10 composite faces, all detected, NME mean 0.01432; outputs exported. VIDEO-mode demo (30 frames, ±8°
     roll): consistency NME 0.004 (IMAGE) vs 0.0119 (VIDEO).
-- **Observed result (optional branches):** a zip of two composite faces with `BYOD_NUM_FACES = 2` and a single composite
-  image each produced landmarks, blendshapes, matrices, overlays and `byod_result.json` with `data_left_runtime: false`.
+- **Observed result (optional branches):** for the committed blob, a zip of two composite faces with `BYOD_NUM_FACES = 2`
+  (and, for the pre-commit tree, also a single composite image) produced landmarks, blendshapes, matrices, overlays and `byod_result.json` with `data_left_runtime: false`.
   A zip with a `../escape.jpg` member stopped with `Stage 'byod' failed (exit 2): ValueError: BYOD zip has an unsafe member
-  path '../escape.jpg'; refusing the archive`; a text file named `notes.jpg` stopped with `ValueError: notes.jpg: not a
-  decodable image …`. The activity at 120° gave detection 0.8, failure 0.8.
+  path '../escape.jpg'; refusing the archive` (committed blob and pre-commit tree); a text file named `notes.jpg` stopped
+  with `ValueError: notes.jpg: not a decodable image …` (pre-commit tree). The activity at 120° gave detection 0.8, failure 0.8.
 - **Caveats:** a local container, not a clean hosted Colab runtime (REL1/REL10 not met); the BYOD inputs were public
   composite faces, and the Colab upload dialog was not exercised; one pass, no repeated runs. The container's proxy
   environment printed a `UV_NATIVE_TLS` deprecation warning from `uv`, judged harmless (it concerns certificate settings

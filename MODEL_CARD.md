@@ -38,7 +38,7 @@ This pipeline provides a ready-to-run, self-contained Google Colab notebook. It 
 
 The packaged model is Google's MediaPipe Face Landmarker task bundle `face_landmarker.task`, published as `mediapipe-models/face_landmarker/face_landmarker`, version `float16/1`. This repository pins Google Cloud Storage object generation `1683136941916318` of that file (3,758,596 bytes, SHA-256 `64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff`). Its architecture source is `google-ai-edge/mediapipe`.
 
-The bundle is a stored, uncompressed zip of three small convolutional or MLP networks in TFLite flatbuffer format and one binary protobuf. A BlazeFace short-range face detector (`face_detector.tflite`) finds each face and its in-plane rotation (Bazarevsky et al., 2019). A face-mesh network (`face_landmarks_detector.tflite`) predicts 478 landmarks on an upright crop of each face: 468 surface points and 10 iris points, as `x` and `y` fractions of the image size and a relative depth `z` (Kartynnik et al., 2019; Grishchenko et al., 2020). A blendshape network (`face_blendshapes.tflite`) maps 146 of those landmarks to 52 named scores in [0, 1]: `_neutral` and 51 expression coefficients. The canonical-face geometry (`geometry_pipeline_metadata_landmarks.binarypb`) yields a 4 × 4 facial transformation matrix per face.
+The bundle is a stored, uncompressed zip of three small convolutional or MLP networks in TFLite flatbuffer format and one binary protobuf. A BlazeFace short-range face detector (`face_detector.tflite`) finds each face and its in-plane rotation (Bazarevsky et al., 2019). A face-mesh network (`face_landmarks_detector.tflite`) predicts 478 landmarks on an upright crop of each face: 468 surface points and 10 iris points (Kartynnik et al., 2019; Grishchenko et al., 2020). Each landmark has `x` and `y` as fractions of the image size and a relative depth `z`. A blendshape network (`face_blendshapes.tflite`) maps 146 of those landmarks to 52 named scores in [0, 1]: `_neutral` and 51 expression coefficients. The canonical-face geometry (`geometry_pipeline_metadata_landmarks.binarypb`) yields a 4 × 4 facial transformation matrix per face.
 
 Inference is a fixed forward pass through the `mediapipe` 1.0.0 Tasks API (`FaceLandmarker`) on the CPU. In VIDEO mode the previous frame's landmarks place the next frame's face region. No adaptation takes place: the weights are never trained, fine-tuned or conditioned in context.
 
@@ -209,7 +209,7 @@ The pipeline is not intended for decisions in health, safety, criminal justice, 
 
 It has not been validated for any such use by anyone. The upstream model cards state that the models are not intended for human life-critical decisions, and this repository's evaluation covers only 102 studio photographs.
 
-Uses that are foreseeable but not intended — driver-drowsiness monitoring from eye blendshapes, clinical facial-palsy assessment, or facial-expression analysis in psychology studies — would need independent domain validation on the target population and capture conditions, human oversight of every outcome, and any regulatory clearance the domain requires. This repository provides none of these.
+Some uses are foreseeable but not intended: driver-drowsiness monitoring from eye blendshapes, clinical facial-palsy assessment, and facial-expression analysis in psychology studies. Each would need independent domain validation on the target population and capture conditions, human oversight of every outcome, and any regulatory clearance the domain requires. This repository provides none of these.
 
 ###### Mitigations
 
@@ -262,7 +262,7 @@ The following uses are unacceptable even where the model would work:
 | Runtime | `mediapipe==1.0.0`, `numpy==2.5.3`, `pillow==12.3.0`, CPython 3.12.12 |
 | Sample faces | `debruine/webmorphR.stim` at `fa8b78fda2d659bb74ce62fcd99c4407551d2a77`, 327 files, 102,754,576 bytes, each pinned in `src/mediapipe_face_landmarker_pipeline/sample_manifest.json` |
 
-`docs/WEIGHTS.md` records the serialization format and the hosting note for the `.task` file.
+`docs/WEIGHTS.md` records the serialization format of the `.task` file and how each member is verified.
 
 ## Input/output contract
 
@@ -275,10 +275,10 @@ The following uses are unacceptable even where the model would work:
 ## Verification records
 
 - **Date:** 2026-10-04
-- **Subject:** `tutorials/mediapipe_face_landmarker_colab.ipynb` generated from the repository's first code commit on branch `ccr-24656dfc-ax1ln2`; see `docs/release-verification.md` for the exact commit and blob
+- **Subject:** `tutorials/mediapipe_face_landmarker_colab.ipynb`, git blob `9b8a54dcc45294998578e00dcb7d67e0a27b6203`, generated from commit `e49deff733c8aa7a91cd99d12f9fb4980a181935`
 - **Runtime:** CPU-only Linux x86_64 container, 4 CPUs, no GPU; kernel CPython 3.11.15; stages in the notebook's isolated environment: CPython 3.12.12 downloaded fresh by `uv` 0.12.15, `mediapipe` 1.0.0, `numpy` 2.5.3, `pillow` 12.3.0
-- **Procedure:** a copy of the notebook executed top to bottom with `jupyter nbconvert --execute` from an empty working directory, defaults unchanged; then four further copies with `USE_BYOD = True` (a zip of two images, a single image, a zip with a `../` member, a text file named `.jpg`) and `RUN_ACTIVITY = True`
-- **Observed result:** default path completed in 129 s including the environment build; values as in `Performance Measures`, robustness and blendshape results as in `docs/release-verification.md`; the two compatible BYOD inputs produced outputs, the two incompatible ones stopped with `unsafe member path '../escape.jpg'` and `not a decodable image`
+- **Procedure:** a copy of the notebook executed top to bottom with `tools/execute_notebook.py` (`jupyter nbconvert --execute`) from an empty working directory, defaults unchanged; then two further copies with `USE_BYOD = True` and `RUN_ACTIVITY = True`: a zip of two composite faces, and a zip with a `../` member
+- **Observed result:** the default path completed 13 of 13 code cells in one pass in 120 s including the environment build, with the values in `Performance Measures`; the compatible BYOD zip produced all outputs; the incompatible one stopped with `BYOD zip has an unsafe member path '../escape.jpg'`. Executed copies are in `docs/execution-evidence/2026-10-04/`
 - **Caveats:** this is a local container, not the clean hosted Google Colab runtime that release requires; a hosted run has not been recorded. One pass, no repeated runs
 
 ## References

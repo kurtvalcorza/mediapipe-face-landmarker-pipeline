@@ -27,8 +27,15 @@ EXPECTED_PROFILE = "TASK-INFERENCE"
 EXPECTED_MODEL_ID = "mediapipe-models/face_landmarker/face_landmarker"
 STAGE_RUNNER = ROOT / "tools" / "tutorial_stages.py"
 SAMPLE_MANIFEST = ROOT / "src" / PACKAGE / "sample_manifest.json"
-# 40-hex revisions the documents may cite besides the bundle identity: the pinned sample repository commit.
-KNOWN_SHAS: frozenset[str] = frozenset({"fa8b78fda2d659bb74ce62fcd99c4407551d2a77"})
+# 40-hex revisions the documents may cite besides the bundle identity: the pinned sample repository commit, and the
+# repository commit and notebook blob of the recorded local CPU execution (docs/release-verification.md).
+KNOWN_SHAS: frozenset[str] = frozenset(
+    {
+        "fa8b78fda2d659bb74ce62fcd99c4407551d2a77",  # debruine/webmorphR.stim, sample faces
+        "e49deff733c8aa7a91cd99d12f9fb4980a181935",  # this repository: sources of the 2026-10-04 local execution
+        "9b8a54dcc45294998578e00dcb7d67e0a27b6203",  # notebook blob executed on 2026-10-04
+    }
+)
 BYOD_GATES = ("USE_BYOD", "RUN_ACTIVITY")
 # EXE1/EXE2 form fields, exactly as an executor edits them in a run copy (tools/execute_notebook.py).
 BYOD_FIELD_LINES = ('USE_BYOD = False  # @param {type:"boolean"}', "BYOD_PATH = ''  # @param {type:\"string\"}", 'BYOD_NUM_FACES = 1  # @param {type:"integer"}')
