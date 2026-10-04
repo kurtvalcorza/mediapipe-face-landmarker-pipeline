@@ -1,0 +1,2 @@
+# Manifests are digest-checked byte-for-byte; never convert their line endings.
+weights/** -text

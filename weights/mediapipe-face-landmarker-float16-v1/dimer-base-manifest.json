@@ -1,0 +1,50 @@
+{
+  "format": "dimer_model_snapshot",
+  "formatVersion": 1,
+  "modelAssetSpec": "1.1",
+  "modelKey": "mediapipe-face-landmarker-float16-v1",
+  "modelId": "mediapipe-models/face_landmarker/face_landmarker",
+  "revision": "1683136941916318",
+  "version": "float16/1",
+  "sourceUrl": "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+  "architectureSource": "google-ai-edge/mediapipe",
+  "license": "Apache-2.0",
+  "redistributionStatus": "permitted",
+  "serialization": "mediapipe-task-bundle",
+  "remoteCodeRequired": false,
+  "files": [
+    {
+      "path": "face_landmarker.task",
+      "bytes": 3758596,
+      "sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff",
+      "md5Base64": "sOcnSQehZEQE/vZrKN1thQ=="
+    }
+  ],
+  "bundleMembers": [
+    {
+      "path": "face_detector.tflite",
+      "bytes": 229746,
+      "sha256": "b4578f35940bf5a1a655214a1cce5cab13eba73c1297cd78e1a04c2380b0152f",
+      "compression": "stored"
+    },
+    {
+      "path": "face_landmarks_detector.tflite",
+      "bytes": 2553590,
+      "sha256": "c7d54204ce0448474c7f3fa9af494787c0965cbdd6f20fc72867e43046bd43d5",
+      "compression": "stored"
+    },
+    {
+      "path": "geometry_pipeline_metadata_landmarks.binarypb",
+      "bytes": 19376,
+      "sha256": "bdbcda96dfcb7da883da124aaa2c55dee49770d934f0fcc71747f8c21bdc75b4",
+      "compression": "stored"
+    },
+    {
+      "path": "face_blendshapes.tflite",
+      "bytes": 955312,
+      "sha256": "4f36dded049db18d76048567439b2a7f58f1daabc00d78bfe8f3ad396a2d2082",
+      "compression": "stored"
+    }
+  ],
+  "totalBytes": 3758596
+}

@@ -1,0 +1,33 @@
+[project]
+name = "mediapipe-face-landmarker-pipeline"
+version = "0.1.0"
+description = "DIMER pipeline for the MediaPipe Face Landmarker task bundle (478 3D face landmarks, 52 blendshape scores and a facial transformation matrix): digest-pinned bundle, input validation, landmark evaluation against annotated faces with mean-shape baselines, robustness and blendshape sanity checks, and a stable CSV/JSON output contract"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { file = "LICENSE" }
+authors = [{ name = "Kurt Valcorza" }]
+dependencies = [
+  "mediapipe==1.0.0",
+  "numpy==2.5.3",
+  "pillow==12.3.0",
+]
+[project.optional-dependencies]
+dev = ["pytest==8.4.2", "ruff==0.16.6"]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[tool.hatch.build.targets.wheel]
+packages = ["src/mediapipe_face_landmarker_pipeline"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 130
+target-version = "py312"
+src = ["src", "tests"]
+extend-exclude = ["tutorials"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
