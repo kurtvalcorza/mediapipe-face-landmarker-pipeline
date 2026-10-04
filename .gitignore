@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+outputs/
+.DS_Store
+
+# The task bundle is fetched at run time from its pinned Cloud Storage generation; only the manifest is committable
+weights/**/*.task
+weights/**/*.tflite
+weights/**/*.part
+# the pinned sample faces are fetched at run time
+weights/face-samples/

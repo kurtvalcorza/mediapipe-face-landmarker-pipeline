@@ -1,0 +1,34 @@
+{
+  "evidence_class": "HOSTED RUNTIME (Google Colab) default-path Run all - NOTEBOOK_SPEC 2.2 REL1/REL2/REL10/REL11 for the default path; REL12 BYOD not exercised",
+  "date": "2026-10-04",
+  "notebook": "tutorials/mediapipe_face_landmarker_colab.ipynb",
+  "notebook_git_blob": "9b8a54dcc45294998578e00dcb7d67e0a27b6203",
+  "generated_from_commit": "e49deff733c8aa7a91cd99d12f9fb4980a181935",
+  "opened_from": "branch ccr-24656dfc-ax1ln2 at fd237b1",
+  "source_cells_identical_to_blob": true,
+  "executed_copy": "mediapipe_face_landmarker_colab_9b8a54d_colab-t4.ipynb",
+  "runtime": {
+    "host": "Google Colab, x86_64, 2 vCPUs, T4 GPU attached (unused; MediaPipe CPU delegate, TFLite XNNPACK)",
+    "kernel_python": "3.13.15",
+    "isolated_env": {"python": "3.12.12 (uv-managed)", "mediapipe": "1.0.0", "numpy": "2.5.3", "pillow": "12.3.0", "locked_packages": 19, "setup_seconds": 13}
+  },
+  "procedure": "Run all, defaults unchanged (USE_BYOD = False, RUN_ACTIVITY = False)",
+  "outcome": "PASS: 13/13 code cells, execution order 1-13, one pass, no error, no restart, no credential, no upload dialog",
+  "stage_seconds": {"weights": 0.4, "prepare": 15.7, "inference": 1.7, "evaluate": 15.4, "robustness": 37.3, "blendshapes": 13.6, "newdata": 4.7, "export": 0.2},
+  "key_results": {
+    "nme_mean": 0.01937,
+    "nme_mean_bootstrap_95ci": [0.01868, 0.02006],
+    "detection_rate": 1.0,
+    "baseline_mean_shape_detector_box_nme_mean": 0.0752,
+    "baseline_mean_shape_image_nme_mean": 0.1532,
+    "smile_pairs_higher": "102/102",
+    "rotate_180": {"detection_rate": 0.9, "failure_rate_at_0.10": 0.9},
+    "composite_nme_mean": 0.01432
+  },
+  "matches_local_cpu_preflight": true,
+  "caveats": [
+    "BYOD branch and optional activity not run on the hosted runtime; REL12 still open",
+    "one pass, no repeated runs",
+    "the executed copy contains Colab runtime paths under /content"
+  ]
+}
