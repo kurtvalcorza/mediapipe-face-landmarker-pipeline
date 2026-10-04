@@ -50,7 +50,7 @@ weights/face-samples/                           the pinned sample faces, cached 
 - **Robustness:** rotation, downscaling, Gaussian blur, brightness and JPEG on 20 faces, with exact geometric maps so predictions are compared with the unperturbed prediction (consistency) and with the annotation.
 - **Blendshapes:** a paired sanity check on neutral vs smiling photographs of the same 102 people. Scores are not calibrated probabilities.
 
-In the one local CPU run (not Colab), the model's mean NME was 0.01937 against 0.0752 (detector-box mean shape) and 0.1532 (image mean shape); every one of 102 smiles raised the smile score; faces rotated by 120° or 180° were mostly still detected but with misplaced landmarks. All numbers are tutorial / sanity evidence; see `docs/release-verification.md`.
+In the local CPU run, reproduced exactly in a fresh Google Colab runtime, the model's mean NME was 0.01937 against 0.0752 (detector-box mean shape) and 0.1532 (image mean shape); every one of 102 smiles raised the smile score; faces rotated by 120° or 180° were mostly still detected but with misplaced landmarks. All numbers are tutorial / sanity evidence; see `docs/release-verification.md`.
 
 ## Tests
 
@@ -72,7 +72,7 @@ The notebook installs nothing into its own kernel. It downloads a pinned `uv` wh
 
 ## Release status
 
-**Candidate** — the notebook's default path, the BYOD branch (two compatible and two incompatible inputs) and the optional activity were executed end to end in a local CPU-only Linux container. That is pre-flight evidence, not the clean hosted-runtime run that NOTEBOOK_SPEC REL1/REL10 require; no Colab run has been recorded yet. `.task` acceptance by the DIMER upload path is an open item (`docs/WEIGHTS.md` §3). See `STATUS.md` and `docs/release-verification.md`.
+**Candidate** — the notebook's default path, the BYOD branch (two compatible and two incompatible inputs) and the optional activity were executed end to end in a local CPU-only Linux container, and a fresh Google Colab runtime completed `Run all` of the same notebook in one pass with identical results. The hosted BYOD journey (REL12), including the upload dialog, is not yet recorded, and `.task` acceptance by the DIMER upload path is an open item (`docs/WEIGHTS.md` §3). See `STATUS.md` and `docs/release-verification.md`.
 
 ## AI Assistance Disclosure
 

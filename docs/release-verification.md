@@ -39,6 +39,29 @@ The model itself is not executed in CI. It is executed by running the notebook, 
 
 ## Recorded executions
 
+### Google Colab hosted runtime, 2026-10-04 (default path)
+
+- **Subject:** `tutorials/mediapipe_face_landmarker_colab.ipynb`, git blob `9b8a54dcc45294998578e00dcb7d67e0a27b6203`,
+  generated from commit `e49deff733c8aa7a91cd99d12f9fb4980a181935`, opened in Colab from branch `ccr-24656dfc-ax1ln2`
+  at `fd237b1`. Every source cell of the executed copy is byte-identical to that blob. The executed copy is
+  `docs/execution-evidence/2026-10-04/mediapipe_face_landmarker_colab_9b8a54d_colab-t4.ipynb`, and
+  `colab_t4_run_summary.json` beside it summarises the run.
+- **Runtime:** fresh Google Colab runtime with a T4 GPU attached (the notebook does not use it; MediaPipe ran on the CPU
+  delegate, TFLite XNNPACK), 2 vCPUs, x86_64, kernel CPython 3.13.15. Stages: the notebook's isolated environment —
+  CPython 3.12.12 managed by `uv`, the carried 19-package lock (`mediapipe` 1.0.0, `numpy` 2.5.3, `pillow` 12.3.0),
+  built in 13 s.
+- **Procedure:** `Run all` with defaults unchanged (`USE_BYOD = False`, `RUN_ACTIVITY = False`).
+- **Observed result:** all 13 code cells completed in one pass in execution order 1–13, with no error, no restart, no
+  credential and no upload dialog. The bundle and its four members verified; 327 sample files fetched and verified; 214
+  photographs validated; the four refusal probes refused and the greyscale probe accepted with `L -> RGB` reported.
+  Stage times: weights 0.4 s, prepare 15.7 s, inference 1.7 s, evaluate 15.4 s, robustness 37.3 s, blendshapes 13.6 s,
+  newdata 4.7 s, export 0.2 s (89 s in stages, plus the 13 s environment build). Every printed metric equals the local
+  CPU pre-flight below: `nme_mean` 0.01937 (95 % bootstrap [0.01868, 0.02006]), detection rate 1.0, baselines 0.0752 and
+  0.1532, the same group, robustness and VIDEO-mode values, rotation 180° detection 0.9 and failure 0.9, smile score
+  higher in 102/102 pairs, composite-face NME mean 0.01432.
+- **Caveats:** the optional BYOD branch and activity were not run, so the REL12 BYOD journey on the hosted runtime,
+  including the upload dialog, is still open. One pass, no repeated runs. `mediapipe` 1.0.1 was not tried on Colab.
+
 ### Local CPU pre-flight, 2026-10-04 (not hosted-runtime evidence)
 
 - **Subject:** `tutorials/mediapipe_face_landmarker_colab.ipynb`, git blob `9b8a54dcc45294998578e00dcb7d67e0a27b6203`,

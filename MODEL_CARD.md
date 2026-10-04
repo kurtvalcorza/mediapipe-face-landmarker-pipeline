@@ -155,7 +155,7 @@ The pipeline reports these measures, named as the code reports them:
 
 NME alone would hide missed faces, so detection rate is reported beside it. Detection rate alone would hide misplaced landmarks, so the failure rate is reported too; the 180° rotation row shows why both are needed (detection 0.9, failure 0.9). Consistency without annotation error would reward a model that is stably wrong.
 
-Observed in the local CPU run (102 neutral photographs, one pass):
+Observed in the local CPU run and reproduced exactly in a fresh Google Colab runtime (102 neutral photographs, one pass each):
 
 | Measure | model | mean shape in detector box | mean shape in image |
 |---|---|---|---|
@@ -276,10 +276,17 @@ The following uses are unacceptable even where the model would work:
 
 - **Date:** 2026-10-04
 - **Subject:** `tutorials/mediapipe_face_landmarker_colab.ipynb`, git blob `9b8a54dcc45294998578e00dcb7d67e0a27b6203`, generated from commit `e49deff733c8aa7a91cd99d12f9fb4980a181935`
+- **Runtime:** fresh Google Colab runtime, x86_64, 2 vCPUs, T4 GPU attached but unused (MediaPipe CPU delegate); kernel CPython 3.13.15; stages in the notebook's isolated environment: CPython 3.12.12 managed by `uv`, `mediapipe` 1.0.0, `numpy` 2.5.3, `pillow` 12.3.0
+- **Procedure:** `Run all` with defaults unchanged
+- **Observed result:** 13 of 13 code cells completed in one pass with no error, restart, credential or upload dialog; about 89 s in stages plus a 13 s environment build; every reported value equals the local run below, including the values in `Performance Measures`. The executed copy is in `docs/execution-evidence/2026-10-04/`
+- **Caveats:** the BYOD branch and the optional activity were not run on the hosted runtime; one pass, no repeated runs
+
+- **Date:** 2026-10-04
+- **Subject:** `tutorials/mediapipe_face_landmarker_colab.ipynb`, git blob `9b8a54dcc45294998578e00dcb7d67e0a27b6203`, generated from commit `e49deff733c8aa7a91cd99d12f9fb4980a181935`
 - **Runtime:** CPU-only Linux x86_64 container, 4 CPUs, no GPU; kernel CPython 3.11.15; stages in the notebook's isolated environment: CPython 3.12.12 downloaded fresh by `uv` 0.12.15, `mediapipe` 1.0.0, `numpy` 2.5.3, `pillow` 12.3.0
 - **Procedure:** a copy of the notebook executed top to bottom with `tools/execute_notebook.py` (`jupyter nbconvert --execute`) from an empty working directory, defaults unchanged; then two further copies with `USE_BYOD = True` and `RUN_ACTIVITY = True`: a zip of two composite faces, and a zip with a `../` member
 - **Observed result:** the default path completed 13 of 13 code cells in one pass in 120 s including the environment build, with the values in `Performance Measures`; the compatible BYOD zip produced all outputs; the incompatible one stopped with `BYOD zip has an unsafe member path '../escape.jpg'`. Executed copies are in `docs/execution-evidence/2026-10-04/`
-- **Caveats:** this is a local container, not the clean hosted Google Colab runtime that release requires; a hosted run has not been recorded. One pass, no repeated runs
+- **Caveats:** this is a local container, not the clean hosted Google Colab runtime that release requires; the hosted default-path run is the record above. One pass, no repeated runs
 
 ## References
 
