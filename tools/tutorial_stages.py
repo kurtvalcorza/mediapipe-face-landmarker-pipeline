@@ -46,6 +46,7 @@ VIDEO_FPS = 30
 BOOTSTRAP_SEED = 0
 BYOD_MAX_IMAGES = 20
 BYOD_MAX_ZIP_BYTES = 200 * 1024 * 1024
+BYOD_IMAGE_SUFFIXES = (".jpg", ".jpeg", ".png", ".bmp", ".gif", ".webp", ".tif", ".tiff")
 PAIRED_HYPOTHESIS = ("mouthSmileLeft", "mouthSmileRight")
 DESCRIPTIVE_BLENDSHAPES = ("cheekSquintLeft", "cheekSquintRight", "eyeSquintLeft", "eyeSquintRight", "eyeBlinkLeft", "eyeBlinkRight", "jawOpen", "mouthClose")
 
@@ -622,27 +623,49 @@ def stage_newdata(run: Run) -> None:
     # VIDEO mode: a 30-frame sequence made by rotating and shifting one composite face; the true motion is known
     rec = by_id(records)[VIDEO_ID]
     image, _ = validate_image(rec["image_path"])
+    # the composite's own annotation (14 mapped points), scaled to the 600 x 600 frame: the reference both modes are scored against
+    truth = template_subset(read_template(rec["template_path"])) * np.array([600 / image.size[0], 600 / image.size[1]])
     image = image.resize((600, 600))
     with make_landmarker(run, num_faces=1) as still:
-        reference = predict_subset(still.detect(image), *image.size)
-    if reference is None:
+        still_prediction = predict_subset(still.detect(image), *image.size)
+    if still_prediction is None:
         raise RuntimeError("no face on the VIDEO-mode source image")
-    iod = inter_ocular_distance(reference, EYE_CORNERS)
+    iod = inter_ocular_distance(truth, EYE_CORNERS)
     frames = []
     for k in range(VIDEO_FRAMES):
         angle = 8.0 * np.sin(2 * np.pi * k / VIDEO_FRAMES)
         frames.append(perturb(image, "roll", float(angle)))
-    errors = {"IMAGE": [], "VIDEO": []}
+    video = {}
     for mode in ("IMAGE", "VIDEO"):
+        vs_motion, vs_still, residuals = [], [], []
         with make_landmarker(run, num_faces=1, running_mode=mode) as landmarker:
             for k, (frame, forward) in enumerate(frames):
                 faces = landmarker.detect(frame) if mode == "IMAGE" else landmarker.detect_frame(frame, int(k * 1000 / VIDEO_FPS) + 1)
                 predicted = predict_subset(faces, *frame.size)
-                expected = apply_affine(forward, reference)
-                errors[mode].append(None if predicted is None else nme_iod(predicted, expected, iod))
-    video = {mode: {"frames": VIDEO_FRAMES, "tracked": sum(e is not None for e in errs), "consistency_nme_mean": r(np.mean([e for e in errs if e is not None])) if any(e is not None for e in errs) else None, "frame_to_frame_change": r(np.mean(np.abs(np.diff([e for e in errs if e is not None])))) if sum(e is not None for e in errs) > 1 else None} for mode, errs in errors.items()}
-    print({"video_mode_demo": video, "motion": "in-plane rotation of ±8° over 30 frames at 30 fps; error = prediction vs the still-image prediction moved by the known rotation, / IOD"}, flush=True)
-    run.write_output("newdata.json", {"images": [rec["id"] for rec in composites], "composite_nme": composite_summary, "per_image": [{"image_id": i[0], "faces": len(i[2]), "nme_vs_template": None if n is None else r(n, 5)} for i, n in zip(items, nmes, strict=True)], "outputs": paths, "video_mode": video})
+                if predicted is None:
+                    residuals.append(None)
+                    continue
+                expected = apply_affine(forward, truth)  # the annotation moved by the true (known) motion
+                vs_motion.append(nme_iod(predicted, expected, iod))
+                vs_still.append(nme_iod(predicted, apply_affine(forward, still_prediction), iod))
+                residuals.append(predicted - expected)
+        # jitter: frame-to-frame displacement of each landmark after the known motion is removed, / IOD (consecutive tracked frames only)
+        steps = [float(np.linalg.norm(b - a, axis=1).mean() / iod) for a, b in zip(residuals, residuals[1:], strict=False) if a is not None and b is not None]
+        video[mode] = {
+            "frames": VIDEO_FRAMES,
+            "tracked": len(vs_motion),
+            "nme_vs_true_motion_mean": r(np.mean(vs_motion)) if vs_motion else None,
+            "jitter_after_motion_removed": r(np.mean(steps)) if steps else None,
+            "self_consistency_nme_mean": r(np.mean(vs_still)) if vs_still else None,
+        }
+    definitions = {
+        "nme_vs_true_motion_mean": "prediction vs the composite's annotation moved by the known rotation, / annotated IOD (the true motion)",
+        "jitter_after_motion_removed": "mean frame-to-frame change of each landmark's error vector (prediction minus moved annotation), / annotated IOD",
+        "self_consistency_nme_mean": "prediction vs the IMAGE-mode still prediction moved by the known rotation, / annotated IOD (IMAGE mode is compared with itself, so it favours IMAGE mode by construction)",
+        "still_prediction_nme_vs_annotation": r(nme_iod(still_prediction, truth, iod)),
+    }
+    print({"video_mode_demo": video, "motion": "in-plane rotation of ±8° over 30 frames at 30 fps", "reference": "the composite's own annotation moved by the known rotation", "still_prediction_nme_vs_annotation": definitions["still_prediction_nme_vs_annotation"]}, flush=True)
+    run.write_output("newdata.json", {"images": [rec["id"] for rec in composites], "composite_nme": composite_summary, "per_image": [{"image_id": i[0], "faces": len(i[2]), "nme_vs_template": None if n is None else r(n, 5)} for i, n in zip(items, nmes, strict=True)], "outputs": paths, "video_mode": video, "video_mode_definitions": definitions})
 
 
 def stage_export(run: Run) -> None:
@@ -677,28 +700,40 @@ def stage_export(run: Run) -> None:
         "evaluation": {"faces": evaluation["faces"], "summary": evaluation["summary"], "per_point": evaluation["per_point"], "groups": evaluation["groups"]},
         "robustness": robustness["table"],
         "blendshape_sanity": {"hypothesis": blendshapes["hypothesis"], "descriptive": blendshapes["descriptive"], "score_semantics": blendshapes["score_semantics"]},
-        "new_data": {"composite_nme": newdata["composite_nme"], "video_mode": newdata["video_mode"]},
+        "new_data": {"composite_nme": newdata["composite_nme"], "video_mode": newdata["video_mode"], "video_mode_definitions": newdata["video_mode_definitions"]},
         "evidence_label": "tutorial / sanity evidence on public sample faces; not a benchmark and not a fairness audit",
+        "run_id": run.root.name,
+        "stage_seconds": stage_timings(run),
+        "optional_branches": {"byod": (run.out / "byod" / "byod_result.json").is_file(), "activity": (run.out / "activity.json").is_file()},
     }
-    path = run.write_output(f"{STEM}_result.json", result)
-    print({"result": str(path), "model": result["model"]["id"], "revision": MODEL_REVISION, "sha256": MODEL_SHA256[:16] + "…", "runtime": result["runtime"]}, flush=True)
-    listing = []
-    for item in sorted(run.out.rglob("*")):
-        if item.is_file():
-            listing.append({"file": item.relative_to(run.out).as_posix(), "bytes": item.stat().st_size, "sha256": sha256_file(item)[:16] + "…"})
-    for row in listing:
-        print(row, flush=True)
+    name = f"{STEM}_result.json"
+    # every file the run wrote to outputs/ (except this record), with its full SHA-256: the record binds the files it describes
+    result["files"] = [{"file": item.relative_to(run.out).as_posix(), "bytes": item.stat().st_size, "sha256": sha256_file(item)} for item in sorted(run.out.rglob("*")) if item.is_file() and item.relative_to(run.out).as_posix() != name]
+    path = run.write_output(name, result)
+    print({"result": str(path), "run_id": result["run_id"], "model": result["model"]["id"], "revision": MODEL_REVISION, "sha256": MODEL_SHA256[:16] + "…", "runtime": result["runtime"]}, flush=True)
+    for row in result["files"]:
+        print({**row, "sha256": row["sha256"][:16] + "…"}, flush=True)
 
 
-def _byod_inputs(path: Path, folder: Path) -> list[Path]:
-    """A single image, or a zip of images (flat or nested; unsafe members refused; nothing executable is read)."""
+def stage_timings(run: Run) -> dict[str, float]:
+    """Seconds per completed stage of this run (written by ``main`` to ``state/timings.json``)."""
+    path = run.state / "timings.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
+
+
+def _byod_inputs(path: Path, folder: Path) -> tuple[list[tuple[str, Path]], list[str]]:
+    """``([(input name, file)], [skipped zip members])`` for a single image, or a zip of images (flat or nested; unsafe
+    members refused; members without an image extension skipped and reported; nothing executable is read).
+
+    Zip members are extracted into ``folder``, a scratch directory outside ``outputs/``; the input name is the member
+    path inside the archive, so every message names the file the user put in the zip."""
     if not path.is_file():
         raise ValueError(f"BYOD_PATH {path} does not exist; upload a file or set the path to an image or a zip already in the runtime")
     if path.suffix.lower() != ".zip":
-        return [path]
+        return [(path.name, path)], []
     if path.stat().st_size > BYOD_MAX_ZIP_BYTES:
         raise ValueError(f"BYOD zip is {path.stat().st_size:,} bytes, above {BYOD_MAX_ZIP_BYTES:,}; split it")
-    out = []
+    out, skipped = [], []
     with zipfile.ZipFile(path) as archive:
         members = [m for m in archive.infolist() if not m.is_dir()]
         for member in members:
@@ -707,18 +742,20 @@ def _byod_inputs(path: Path, folder: Path) -> list[Path]:
                 raise ValueError(f"BYOD zip has an unsafe member path {name!r}; refusing the archive")
             if (member.external_attr >> 16) & 0o170000 == 0o120000:
                 raise ValueError(f"BYOD zip has a symlink member {name!r}; refusing the archive")
-        images = [m for m in members if not Path(m.filename).name.startswith(".") and "__MACOSX" not in m.filename]
+        visible = [m for m in members if not Path(m.filename).name.startswith(".") and "__MACOSX" not in m.filename]
+        images = [m for m in visible if Path(m.filename).suffix.lower() in BYOD_IMAGE_SUFFIXES]
+        skipped = [m.filename for m in visible if m not in images]
         if not images:
-            raise ValueError("BYOD zip holds no files")
+            raise ValueError(f"BYOD zip {path.name} holds no image files (looked for {', '.join(BYOD_IMAGE_SUFFIXES)}; skipped {skipped or 'nothing'})")
         if len(images) > BYOD_MAX_IMAGES:
-            raise ValueError(f"BYOD zip holds {len(images)} files; at most {BYOD_MAX_IMAGES} images are accepted per run")
+            raise ValueError(f"BYOD zip holds {len(images)} image files; at most {BYOD_MAX_IMAGES} images are accepted per run")
         if sum(m.file_size for m in images) > BYOD_MAX_ZIP_BYTES:
             raise ValueError("BYOD zip expands beyond the size ceiling; split it")
         for k, member in enumerate(images):
-            target = folder / f"{k:02d}_{Path(member.filename).name}"
+            target = folder / f"{k:02d}{Path(member.filename).suffix.lower()}"
             target.write_bytes(archive.read(member))
-            out.append(target)
-    return out
+            out.append((member.filename, target))
+    return out, skipped
 
 
 def stage_byod(run: Run) -> None:
@@ -737,15 +774,17 @@ def stage_byod(run: Run) -> None:
 
     num_faces = validate_num_faces(run.options.num_faces)
     folder = run.out / "byod"
-    if folder.exists():
-        shutil.rmtree(folder)
-    folder.mkdir(parents=True)
-    inputs = _byod_inputs(Path(run.options.byod), folder)
-    print({"contract": INPUT_SCHEMA, "num_faces": num_faces, "inputs": len(inputs)}, flush=True)
+    scratch = run.root / "byod_inputs"  # extracted zip members: outside outputs/, so outputs/byod holds only results
+    for directory in (folder, scratch):
+        if directory.exists():
+            shutil.rmtree(directory)
+        directory.mkdir(parents=True)
+    inputs, skipped = _byod_inputs(Path(run.options.byod), scratch)
+    print({"contract": INPUT_SCHEMA, "num_faces": num_faces, "inputs": len(inputs), "skipped_non_image_members": skipped}, flush=True)
     validated = []
-    for path in inputs:
-        image, report = validate_image(path)  # a refusal stops the stage with the rule that failed
-        validated.append((path.name, image, report))
+    for name, path in inputs:
+        image, report = validate_image(path, image_id=name)  # a refusal stops the stage with the rule that failed, naming the user's file
+        validated.append((name, image, report))
         print({"validated": report}, flush=True)
     items, tiles, labels = [], [], []
     with make_landmarker(run, num_faces=num_faces) as landmarker:
@@ -757,7 +796,7 @@ def stage_byod(run: Run) -> None:
             print({"image_id": name, "faces": len(faces), "summary": face_summary(faces, *image.size, top=3)}, flush=True)
     paths = export_faces(folder / "byod", items)
     contact_sheet(tiles, columns=min(4, len(tiles)), tile=360, labels=labels).save(folder / "byod_overlays.jpg", quality=90)
-    record = {"num_faces": num_faces, "inputs": [report for _, _, report in validated], "faces_per_image": {name: len(faces) for name, _, faces in items}, "outputs": paths, "model_revision": MODEL_REVISION, "model_sha256": MODEL_SHA256, "runtime": runtime_versions(), "data_left_runtime": False}
+    record = {"run_id": run.root.name, "num_faces": num_faces, "inputs": [report for _, _, report in validated], "skipped_non_image_members": skipped, "faces_per_image": {name: len(faces) for name, _, faces in items}, "outputs": paths, "model_revision": MODEL_REVISION, "model_sha256": MODEL_SHA256, "runtime": runtime_versions(), "data_left_runtime": False}
     run.write_output("byod/byod_result.json", record)
     print({"written": [*paths.values(), str(folder / "byod_overlays.jpg"), str(folder / "byod_result.json")], "data_left_runtime": False}, flush=True)
 
@@ -831,7 +870,11 @@ def main(argv: list[str] | None = None) -> int:
         error_file.write_text(json.dumps({"stage": options.stage, "type": type(exc).__name__, "message": message}), encoding="utf-8")
         print(f"STAGE FAILED ({options.stage}): {type(exc).__name__}: {message}", flush=True)
         return 2
-    print({"stage": options.stage, "status": "ok", "seconds": round(time.perf_counter() - started, 1)}, flush=True)
+    seconds = round(time.perf_counter() - started, 1)
+    timings = stage_timings(run)
+    timings[options.stage] = seconds
+    run.write_state("timings.json", timings)
+    print({"stage": options.stage, "status": "ok", "seconds": seconds}, flush=True)
     return 0
 
 

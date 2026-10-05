@@ -63,8 +63,10 @@ TEMPLATE = {
         "blur, brightness and JPEG compression, sanity-checks the blendshape scores on 102 neutral/smiling pairs, processes "
         "ten new composite faces and a 30-frame sequence in VIDEO mode, and writes one provenance record. The default path "
         "needs no repository clone, no DIMER worker or service, no credential, no upload dialog, no configuration edit and "
-        "no runtime restart (NOTEBOOK_SPEC 2.2 §5). In the one local CPU run recorded for this revision (a 4-CPU Linux x86_64 container, not Colab) the model stages "
-        "took under two minutes after the environment was built; a hosted Colab run has not yet been recorded."
+        "no runtime restart (NOTEBOOK_SPEC 2.2 §5). The recorded hosted run (Google Colab, 4 October 2026, a 2-vCPU x86_64 runtime with "
+        "the default settings, notebook generated from revision `e49deff`, an earlier revision with the same stages and lock) built the "
+        "isolated environment in 13 s and spent 89 s in the model stages; see `docs/release-verification.md`. A slower network or "
+        "CPU takes longer. A second **Run all** in the same runtime reuses that environment instead of building another."
     ),
     "byod": (
         "After the canonical path completes, set `USE_BYOD = True` in Section 11 and run that cell to process your own image, "
@@ -149,7 +151,7 @@ TEMPLATE = {
         "calibrated probability that an expression is present."
     ),
     "prerequisites": [
-        "- **Runtime:** a fresh **Linux x86_64** runtime — a Google Colab CPU runtime is enough, and so is Kaggle or a Linux Jupyter kernel. The kernel's own Python version does not matter: the notebook installs nothing into it, and runs every stage with CPython 3.12.12 in an isolated environment built from {n_locked} hash-locked packages (`mediapipe` 1.0.0, `numpy` 2.5.3, `pillow` 12.3.0). Inference runs on the CPU through TFLite's XNNPACK delegate in the bundle's float16 weights; no GPU or other accelerator is used, and a GPU runtime gives no speed-up here. About 0.2 GB of disk is needed for the bundle and the sample faces and about 1.5 GB for the isolated environment.",
+        "- **Runtime:** a fresh **Linux x86_64** runtime — a Google Colab CPU runtime is enough, and so is Kaggle or a Linux Jupyter kernel. The kernel's own Python version does not matter: the notebook installs nothing into it, and runs every stage with CPython 3.12.12 in an isolated environment built from {n_locked} hash-locked packages (`mediapipe` 1.0.0, `numpy` 2.5.3, `pillow` 12.3.0). Inference runs on the CPU through TFLite's XNNPACK delegate in the bundle's float16 weights; no GPU or other accelerator is used, and a GPU runtime gives no speed-up here. About 0.2 GB of disk is needed for the bundle and the sample faces. The isolated environment measured 0.52 GB plus 0.11 GB of managed CPython in the review's local run; the Section 1 check asks for 1.5 GB, which includes a margin for `uv`'s download cache.",
         "- **Knowledge:** what an image coordinate is (x to the right, y down, in pixels or as a fraction of the width and height), what a mean and a median are, and how to read a Python dictionary printed by a cell. No prior experience with face landmarks is assumed: each term is explained where it is first needed, and the glossary collects them.",
         "- **Model file:** one MediaPipe task bundle, `face_landmarker.task` (a stored zip of three TFLite flatbuffers and one binary protobuf). TFLite flatbuffers are data read by the TFLite interpreter; nothing is unpickled and no code is downloaded with the model. The bundle is released under Apache-2.0.",
         "- **Data contract:** an image Pillow can decode, 64..8192 px on each side, at most 40,000,000 pixels and 50 MB; it is converted to 8-bit RGB (any conversion is reported) and an EXIF orientation is applied (reported). `num_faces` is 1..10. Validation is structural: it cannot tell whether an image contains a face — the detector decides, and zero faces is a valid result.",
@@ -167,8 +169,10 @@ TEMPLATE = {
                 "**Prerequisites** give the details.\n\n"
                 "**Running it.** In Colab, keep the default CPU runtime and choose *Runtime → Run all*. The default path needs no "
                 "edit, no upload, no account, no token and no runtime restart. Section 2 builds an isolated environment from "
-                "hash-locked packages, which takes the longest; the model stages that follow take seconds to a minute each on a "
-                "CPU. You can also run the notebook one cell at a time with *Shift + Enter*.\n\n"
+                "hash-locked packages (13 s in the recorded Colab run; reused by a later Run all in the same runtime); the "
+                "model stages that follow took between 0.2 s and 37 s each in that run, 89 s in all. You can also run the "
+                "notebook one cell at a time with *Shift + Enter*. Re-running the Section 1 cell on its own is safe: it keeps "
+                "this session's run directory, so the cells after it keep working.\n\n"
                 "**Where the code runs.** The notebook kernel installs nothing and imports no model library. Each learner cell "
                 "calls `run_stage('…')`, which runs one stage of the carried stage runner in its own process with the isolated "
                 "environment's Python, streams what it prints, and stops the notebook with the stage's own error message if it "
@@ -183,6 +187,7 @@ TEMPLATE = {
                 "prerequisite machine-learning knowledge. Open one with *Show code* if you are curious.\n\n"
                 "**Form controls.** Two learner cells start with fields that Colab renders as a form: `USE_BYOD`, `BYOD_PATH` and "
                 "`BYOD_NUM_FACES` (Section 11), and `RUN_ACTIVITY` and `ACTIVITY_ROTATION` in the optional activity (Section 12). "
+                "The Section 1 infrastructure cell has one more, `NEW_RUN_DIRECTORY`, off by default. "
                 "Leave them at their defaults for the first run: the notes and sample answers describe the default path.\n\n"
                 "**Section tags.** Each numbered heading carries one tag. **[Concept]** — what the model does and why. "
                 "**[Evaluation practice]** — how the evidence is produced and how to read it. **[Engineering]** — "
@@ -268,8 +273,10 @@ TEMPLATE = {
                 "> **Infrastructure.** The code cells in Sections 1–3 are collapsed. You may run them without studying their "
                 "implementation; they exist for reproducibility and provenance. The learning activities start in Section 4.\n\n"
                 "**Input:** a fresh hosted runtime. **System:** checks that it is Linux x86_64 with enough free disk, and creates "
-                "a new run directory. **Output:** the machine, the CPU count and the directories this run will use. Each run "
+                "a run directory. **Output:** the machine, the CPU count and the directories this run will use. Each new session "
                 "writes to a new directory under `outputs/{stem}/`, so an earlier export cannot be mistaken for a current result. "
+                "Running this cell again in the same session keeps that directory (the cells after it keep working); tick "
+                "`NEW_RUN_DIRECTORY` for a fresh one, then run Sections 2 and 3 again. "
                 "The verified bundle and sample faces are kept in `weights/` and reused by a later run."
             ),
             "after": (
@@ -308,12 +315,15 @@ TEMPLATE = {
         {
             "cell": "install",
             "md": (
-                "**Infrastructure: the isolated environment.** Installation messages from `uv` are normal and take a minute or "
-                "two. A failed download or a hash mismatch stops the cell; never remove a pin or a hash to get past one."
+                "**Infrastructure: the isolated environment.** Installation messages from `uv` are normal; the build took 13 s "
+                "in the recorded Colab run and can take longer on a slow network. If an environment built from the same lock "
+                "already exists in this runtime (a second Run all), the cell reuses it and prints `environment_reused: True`. "
+                "A failed download or a hash mismatch stops the cell; never remove a pin or a hash to get past one."
             ),
             "after": (
                 "**Expected result:** one dictionary with the generating revision, the isolated environment's Python (3.12.12), "
-                "the `mediapipe`, `numpy` and `PIL` versions, the number of locked packages and the setup time."
+                "the `mediapipe`, `numpy` and `PIL` versions, the number of locked packages, whether an existing environment was "
+                "reused, and the setup time."
             ),
         },
         {
@@ -564,8 +574,9 @@ TEMPLATE = {
                 "Then it compares the two running modes on a 30-frame sequence made from one composite: the face rolls between "
                 "−8° and +8°, so the true motion of every landmark is known. **IMAGE** mode runs the detector on every frame; "
                 "**VIDEO** mode passes increasing timestamps and reuses the previous frame's landmarks to place the face region "
-                "(tracking), which is how the model is meant to run on a camera stream. The error is the distance from the "
-                "still-image prediction moved by the known rotation.\n\n"
+                "(tracking), which is how the model is meant to run on a camera stream. Both modes are scored against the same "
+                "reference: the composite's own annotation moved by the known rotation — the true motion — divided by the "
+                "annotated inter-ocular distance.\n\n"
                 "**Predict before running:** will VIDEO mode, which tracks the face from frame to frame, be closer to the known "
                 "motion than IMAGE mode, or further from it?"
             ),
@@ -577,13 +588,18 @@ TEMPLATE = {
         {
             "md": (
                 "**What to notice:** one line per composite with its strongest blendshapes and its NME, a composite NME summary, "
-                "the three written files, and the VIDEO-mode comparison: frames tracked, mean consistency NME and mean "
-                "frame-to-frame change for each mode. Read your own numbers for the direction: on this synthetic roll, VIDEO mode "
-                "may well follow the known motion *less* closely than IMAGE mode, because tracking places each frame's face "
-                "region from the previous frame and can lag a rotation; its purpose is speed and stability on real camera "
-                "streams, which a 30-frame synthetic sequence does not test. Composites are smoother than real faces and were "
-                "built from the same population as Section 6, so their NME is a sanity check of the contract on new images, not "
-                "evidence of generalisation.\n\n" + ATTRIBUTION
+                "the three written files, and the VIDEO-mode comparison. For each mode: `tracked` (frames with a face); "
+                "`nme_vs_true_motion_mean`, the error against the moved annotation; `jitter_after_motion_removed`, how much each "
+                "landmark's error changes from one frame to the next once the known motion is subtracted (0 would be a perfectly "
+                "steady offset); and `self_consistency_nme_mean`, the distance from IMAGE mode's own still-image prediction moved "
+                "by the rotation. The last one favours IMAGE mode by construction — IMAGE mode is compared with itself and scores "
+                "exactly 0 on the unrotated frame — so use it only as a stability measure. `still_prediction_nme_vs_annotation` "
+                "is how far the still prediction itself sits from the annotation: it sets the floor both modes start from.\n\n"
+                "Read your own numbers for the direction and the size of the gap between the modes on `nme_vs_true_motion_mean`. "
+                "This stage measures *that* the modes differ on this sequence, not *why*: it does not test tracking lag or any "
+                "other cause, and VIDEO mode's purpose — speed and stability on real camera streams — is not what a 30-frame "
+                "synthetic roll measures. Composites are smoother than real faces and were built from the same London Set people "
+                "as Section 6, so their NME is a sanity check of the contract on new images, not evidence of generalisation.\n\n" + ATTRIBUTION
             ),
         },
         {
@@ -593,18 +609,21 @@ TEMPLATE = {
                 "generation, SHA-256, download URL, the four member digests, licence, and that nothing was unpickled and no "
                 "remote code ran), the notebook's source revision, the runtime versions, the inference configuration, the "
                 "sample repository, commit and manifest digest, and every summary from Sections 6–9 labelled as tutorial "
-                "evidence. It then lists every file the run wrote with its size and digest. No artifact is produced: the "
-                "bundle is used as published and nothing in this notebook changes it.\n\n"
-                "**Expected result:** the result path, the model id and revision, the runtime, and the file listing — CSV and JSON "
-                "outputs, overlays and figures, and the per-stage JSON records."
+                "evidence, the run id (the run directory's name), the seconds each stage took, which optional branches had "
+                "already run, and a `files` inventory: the relative path, size and full SHA-256 of every file the run wrote to "
+                "`outputs/` except the record itself. It then prints that inventory with shortened digests. No artifact is "
+                "produced: the bundle is used as published and nothing in this notebook changes it.\n\n"
+                "**Expected result:** the result path, the run id, the model id and revision, the runtime, and the file listing — "
+                "CSV and JSON outputs, overlays and figures, and the per-stage JSON records."
             ),
             "code": "run_stage('export')",
         },
         {
             "md": (
-                "**What to notice:** every number this notebook printed is in a machine-readable file, and each file is traceable "
-                "to the image, face and landmark ids it describes and to the exact bundle that produced it. This is the end of "
-                "the canonical path."
+                "**What to notice:** every number this notebook printed is in a machine-readable file. Inside a file, each row is "
+                "traceable to the image, face and landmark ids it describes; `{stem}_result.json` then binds each file to this "
+                "run and to the exact bundle by its full SHA-256, so a CSV downloaded on its own can still be matched to the run "
+                "that produced it (`sha256sum` the file and look it up in `files`). This is the end of the canonical path."
             ),
         },
         {
@@ -614,8 +633,13 @@ TEMPLATE = {
                 "how to switch it on. When it is on, your input goes through the same contract as the samples — "
                 "`validate_image`, the same `FaceLandmarkerPipeline` configuration (IMAGE mode, confidence 0.5) and the same "
                 "writers.\n\n"
-                "**What you can supply.** One image, or a zip of up to 20 images (flat or in folders; hidden files ignored; "
-                "absolute paths, `..` and symlinks refused; at most 200 MB). Each image: any format Pillow decodes, 64..8192 px "
+                "**What you can supply.** One image, or a zip of up to 20 images (flat or in folders; at most 200 MB; absolute "
+                "paths, `..` and symlinks refuse the whole archive). Inside a zip, only members with an image extension (`.jpg`, "
+                "`.jpeg`, `.png`, `.bmp`, `.gif`, `.webp`, `.tif`, `.tiff`) are read; hidden files and `__MACOSX` are ignored, and "
+                "any other member — a stray `README.txt` or `.json` — is skipped and listed under `skipped_non_image_members`. "
+                "Every message names the member path as it appears in your zip. Members are extracted to a scratch folder "
+                "(`byod_inputs/` in the run directory, outside `outputs/`), so `outputs/byod/` holds only results. Each image: "
+                "any format Pillow decodes, 64..8192 px "
                 "per side, at most 40,000,000 pixels and 50 MB; it is converted to RGB and an EXIF orientation applied, and both "
                 "are reported. `BYOD_NUM_FACES` sets the maximum faces per image (1..10). A refusal stops the cell with a message "
                 "naming the file and the rule.\n\n"
@@ -707,8 +731,9 @@ TEMPLATE = {
                 "| Section 1 stops with `This notebook needs a Linux x86_64 runtime` | a local Windows or macOS kernel, or an ARM "
                 "machine | Use Google Colab, Kaggle, or a Linux x86_64 Jupyter kernel: the locked environment is built for "
                 "manylinux x86_64 wheels. |\n"
-                "| Section 1 stops with `Not enough free disk` | the environment needs about 1.5 GB and the data about 0.2 GB | "
-                "Start a fresh runtime; a `weights/` directory from an earlier run is reused and counted. |\n"
+                "| Section 1 stops with `Not enough free disk` | the check asks for 1.5 GB for the environment (0.63 GB measured, plus a "
+                "margin) and about 0.2 GB for the data | Start a fresh runtime; a `weights/` directory and an environment built "
+                "from the same lock earlier in this runtime are reused and counted. |\n"
                 "| `Carried file integrity failure` in Section 2 | a carried file was edited in the notebook | Do not edit the "
                 "infrastructure cells; open a fresh copy of the notebook from the repository. |\n"
                 "| `uv 0.12.15 wheel size/hash mismatch`, or a `URLError` / timeout while downloading it | a network failure or "
@@ -722,6 +747,11 @@ TEMPLATE = {
                 "fixing the cause you can re-run that cell and the cells after it. |\n"
                 "| `… is missing: run the stage that writes it before …` | a learner cell was run before an earlier stage | Run the "
                 "notebook from the top, or re-run the earlier cells in order. |\n"
+                "| `The run directory … has no carried files, or the isolated environment is gone: run the three Infrastructure "
+                "cells again in order (Sections 1, 2 and 3)` | Section 1 was run with `NEW_RUN_DIRECTORY` ticked (a fresh, empty run "
+                "directory), or the runtime's temporary directory was cleared | Run Sections 1, 2 and 3 again in order, then the "
+                "cell you wanted, or choose *Runtime → Run all*. Re-running the Section 1 cell on its own with the default setting "
+                "keeps the run directory and needs nothing else. |\n"
                 "| `the sample manifest changed since 'prepare'` | the carried files were regenerated mid-run | Re-run from Section 4. |\n"
                 "| A download error in Section 3, or `downloaded face_landmarker.task: … refusing it` | a transient Cloud Storage "
                 "failure or a partial download | Re-run the Section 3 cell; nothing is written until the bytes match. |\n"
@@ -738,8 +768,9 @@ TEMPLATE = {
                 "Colab | Set `BYOD_PATH` to a file already in the runtime, or use Colab for the upload. |\n"
                 "| `not a decodable image`, `each side must be within 64..8192 px`, `above the … ceiling` | a BYOD file outside the "
                 "contract | Convert it to JPEG or PNG, or resize it, and try again. |\n"
-                "| `BYOD zip has an unsafe member path` or `holds … files` | an archive with absolute or `..` paths, symlinks, or "
-                "more than 20 images | Re-create the zip with plain relative names and at most 20 images. |\n"
+                "| `BYOD zip has an unsafe member path`, `holds … image files` or `holds no image files` | an archive with absolute or "
+                "`..` paths, symlinks, more than 20 images, or no member with an image extension | Re-create the zip with plain "
+                "relative names and 1–20 images; other files in it are skipped and listed, not refused. |\n"
                 "| BYOD returns 0 faces | the face is too small, strongly turned or rotated, partly hidden, or there is no face | "
                 "Try a frontal, upright photograph in which the face fills a larger part of the image; zero faces is a valid "
                 "result, not an error. |"

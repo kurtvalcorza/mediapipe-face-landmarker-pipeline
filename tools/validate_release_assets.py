@@ -68,7 +68,7 @@ GUIDED_MIN_COUNTS = {
 }
 SECTION_TAGS = ("[Concept]", "[Evaluation practice]", "[Engineering]")
 INFRASTRUCTURE_TITLES = {
-    "check": "# @title Infrastructure: check the runtime and disk; create a fresh run directory",
+    "check": "# @title Infrastructure: check the runtime and disk; create or keep this session's run directory",
     "carrier": "# @title Infrastructure: write and verify the carried package, stage runner, lock and manifests",
     "install": "# @title Infrastructure: install the locked runtime into an isolated environment and define the stage runner",
     "weights": "# @title Infrastructure: stage and digest-verify the pinned task bundle",
