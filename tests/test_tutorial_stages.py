@@ -242,7 +242,7 @@ def test_every_stage_runs_in_order_against_a_stub(stub_run, tmp_path):
     archive = _zip(tmp_path / "mine.zip", {"a/one.png": image.read_bytes(), "two.png": image.read_bytes(), "__MACOSX/._two.png": b"x"})
     run("byod", byod=str(archive), num_faces=2)
     record = json.loads((out / "byod" / "byod_result.json").read_text())
-    assert record["data_left_runtime"] is False and record["faces_per_image"] == {"00_one.png": 2, "01_two.png": 2}
+    assert record["data_left_runtime"] is False and record["faces_per_image"] == {"a/one.png": 2, "two.png": 2}
     assert (out / "byod" / "byod_landmarks.csv").exists() and (out / "byod" / "byod_overlays.jpg").exists()
     with pytest.raises(ValueError, match="num_faces must be in 1..10"):
         run("byod", byod=str(image), num_faces=11)

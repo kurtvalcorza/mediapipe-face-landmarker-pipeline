@@ -1,0 +1,170 @@
+[colab] Parsing notebook '/home/kurt/colab-runs/mediapipe-face-landmarker-pipeline-7c0f9a2-ecf34e/mediapipe_face_landmarker_colab_7c0f9a2_colab-cli-t4.ipynb'...
+[colab] Executing cell 1/13 - Infrastructure: check the runtime and disk; create or keep this session's run directory...
+{'machine': 'x86_64', 'cpus': 2, 'kernel_python': '3.13.15', 'run_directory': '/content/outputs/mediapipe_face_landmarker/9b20fc37221e', 'weights': '/content/weights', 'environment': '/tmp/mediapipe_face_landmarker_env_9ee74eece7c29be6', 'free_gib': {'weights': 193.3, 'environment': 193.3}}
+[colab] Executing cell 2/13 - Infrastructure: write and verify the carried package, stage runner, lock and manifests...
+{'carried_files': 10, 'verified': True, 'repository': 'kurtvalcorza/mediapipe-face-landmarker-pipeline', 'revision': 'a732df1edbed6e814e825e8155177657e8fa9af7', 'generator': 'build_notebook.py/3.0-cpu'}
+[colab] Executing cell 3/13 - Infrastructure: install the locked runtime into an isolated environment and define the stage runner...
+{'notebook_source': 'a732df1edbed6e814e825e8155177657e8fa9af7', 'python': '3.12.12', 'mediapipe': '1.0.0', 'numpy': '2.5.3', 'PIL': '12.3.0', 'locked_packages': 19, 'environment': '/tmp/mediapipe_face_landmarker_env_9ee74eece7c29be6/venv', 'environment_reused': False, 'setup_seconds': 9}
+[colab] Executing cell 4/13 - Infrastructure: stage and digest-verify the pinned task bundle...
+Running stage 'weights' in the isolated environment; log: /content/outputs/mediapipe_face_landmarker/9b20fc37221e/logs/weights.log
+{'model_id': 'mediapipe-models/face_landmarker/face_landmarker', 'version': 'float16/1', 'revision (object generation)': '1683136941916318', 'bytes': 3758596, 'sha256': '64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff', 'fetched': ['face_landmarker.task']}
+{'bundle_member': 'face_detector.tflite', 'bytes': 229746, 'compression': 'stored', 'sha256': 'b4578f35940bf5a1…', 'verified': True}
+{'bundle_member': 'face_landmarks_detector.tflite', 'bytes': 2553590, 'compression': 'stored', 'sha256': 'c7d54204ce044847…', 'verified': True}
+{'bundle_member': 'geometry_pipeline_metadata_landmarks.binarypb', 'bytes': 19376, 'compression': 'stored', 'sha256': 'bdbcda96dfcb7da8…', 'verified': True}
+{'bundle_member': 'face_blendshapes.tflite', 'bytes': 955312, 'compression': 'stored', 'sha256': '4f36dded049db18d…', 'verified': True}
+{'stage': 'weights', 'status': 'ok', 'seconds': 0.4}
+[colab] Executing cell 5/13 - mediapipe_face_landmarker-18...
+Running stage 'prepare' in the isolated environment; log: /content/outputs/mediapipe_face_landmarker/9b20fc37221e/logs/prepare.log
+{'ceilings': {'modality': 'a still image (JPEG, PNG, BMP, WebP or any other format Pillow decodes) or a sequence of frames', 'colour': 'decoded and converted to 8-bit RGB; any conversion (greyscale, palette, alpha, CMYK, 16-bit) is reported, never silent', 'orientation': 'an EXIF orientation tag is applied before inference and reported', 'sides': '64..8192 px on each side', 'pixels': 'at most 40,000,000 pixels', 'file_bytes': 'at most 52,428,800 bytes', 'num_faces': '1..10 faces requested; MediaPipe returns at most that many, and zero faces is a valid result', 'validation': 'structural only: validation cannot tell whether an image contains a face; the detector decides that'}}
+{'samples': {'files': 327, 'fetched': 327, 'reused_from_cache': 0, 'bytes': 102754576, 'commit': 'fa8b78fda2d659bb74ce62fcd99c4407551d2a77', 'cache_dir': '/content/weights/face-samples'}, 'source': 'https://raw.githubusercontent.com/debruine/webmorphR.stim/fa8b78fda2d659bb74ce62fcd99c4407551d2a77/', 'licence': 'CC BY 4.0 (Face Research Lab London Set; Young adult composite faces)'}
+{'validated': 214, 'per_set': {'neutral': 102, 'smiling': 102, 'composite': 10}, 'image_sizes': [(1350, 1350)], 'annotated_with_templates': 112, 'conversions': ['none']}
+{'probe': 'text bytes named .jpg', 'outcome': 'rejected: notes.jpg: not a decodable image (UnidentifiedImageError: cannot identify image file <_io.BytesIO object at 0x7f6c3df2dc10>); supply a JPEG or PNG photograph'}
+{'probe': '40 x 40 image', 'outcome': 'rejected: tiny.png: 40 x 40 px; each side must be within 64..8192 px; resize the image'}
+{'probe': '9000 x 100 image', 'outcome': 'rejected: banner.png: 9000 x 100 px; each side must be within 64..8192 px; resize the image'}
+{'probe': 'num_faces = 0', 'outcome': 'rejected: num_faces must be in 1..10, got 0'}
+{'probe': 'greyscale 256 x 256 image', 'outcome': "accepted with a reported change: ['L -> RGB']"}
+{'stage': 'prepare', 'status': 'ok', 'seconds': 15.4}
+[colab] Executing cell 6/13 - mediapipe_face_landmarker-21...
+Running stage 'inference' in the isolated environment; log: /content/outputs/mediapipe_face_landmarker/9b20fc37221e/logs/inference.log
+{'input': {'image_id': 'neutral/001_03', 'width': 1350, 'height': 1350, 'source_mode': 'RGB', 'bytes': 441614, 'changes': [], 'accepted': True}}
+{'config': {'num_faces': 1, 'running_mode': 'IMAGE', 'min_face_detection_confidence': 0.5, 'min_face_presence_confidence': 0.5, 'min_tracking_confidence': 0.5, 'output_face_blendshapes': True, 'output_facial_transformation_matrixes': True, 'delegate': 'CPU'}, 'faces_found': 1, 'inference_ms': 35.1}
+{'landmarks_shape': [478, 3], 'blendshapes': 52, 'matrix_shape': [4, 4]}
+{'landmark_row': {'image_id': 'neutral/001_03', 'face_id': 0, 'landmark_id': 0, 'x': 0.497943, 'y': 0.618829, 'z': -0.039088, 'x_px': 672.22, 'y_px': 835.42, 'z_px': -52.77}}
+{'landmark_row': {'image_id': 'neutral/001_03', 'face_id': 0, 'landmark_id': 1, 'x': 0.493625, 'y': 0.565718, 'z': -0.077802, 'x_px': 666.39, 'y_px': 763.72, 'z_px': -105.03}}
+{'landmark_row': {'image_id': 'neutral/001_03', 'face_id': 0, 'landmark_id': 2, 'x': 0.496346, 'y': 0.581211, 'z': -0.039891, 'x_px': 670.07, 'y_px': 784.63, 'z_px': -53.85}}
+{'summary': [{'face_id': 0, 'landmark_box_px': [462.2, 454.8, 901.1, 992.3], 'top_blendshapes': {'browOuterUpLeft': 0.618, 'browOuterUpRight': 0.381, 'browInnerUp': 0.275, 'eyeLookInRight': 0.265, 'eyeLookOutLeft': 0.245}}]}
+{'transformation_matrix': [[0.996, -0.043, -0.073, 0.233], [0.039, 0.998, -0.058, -1.214], [0.075, 0.055, 0.996, -38.311], [0.0, 0.0, 0.0, 1.0]]}
+{'score_semantics': 'Blendshape scores are network outputs in [0, 1] that drive an avatar rig; they are not calibrated probabilities that an expression is present, and the pipeline applies no threshold to them.'}
+{'written': {'landmarks_csv': '/content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_walkthrough_landmarks.csv', 'blendshapes_csv': '/content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_walkthrough_blendshapes.csv', 'matrices_json': '/content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_walkthrough_matrices.json'}, 'overlay': '/content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_walkthrough_overlay.jpg'}
+{'faces_returned': {'num_faces=1': 1, 'num_faces=2': 2, 'blank grey image': 0}, 'collage': 'composite/f_white + composite/m_african'}
+{'stage': 'inference', 'status': 'ok', 'seconds': 2.5}
+All 478 landmarks (white); the 14 evaluated points ringed in orange -> /content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_walkthrough_overlay.jpg
+<IPython.core.display.Image object>
+
+[Image saved to: /tmp/tmpnfoolsax.jpeg]
+num_faces=2 on a collage of two composite faces -> /content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_two_faces_overlay.jpg
+<IPython.core.display.Image object>
+
+[Image saved to: /tmp/tmpzkac_yhy.jpeg]
+[colab] Executing cell 7/13 - mediapipe_face_landmarker-24...
+Running stage 'evaluate' in the isolated environment; log: /content/outputs/mediapipe_face_landmarker/9b20fc37221e/logs/evaluate.log
+{'model': {'images': 102, 'detected': 102, 'detection_rate': 1.0, 'nme_mean': 0.01937, 'nme_median': 0.0194, 'nme_std': 0.00355, 'nme_p90': 0.02449, 'nme_max': 0.02821, 'failure_rate_at_0.10': 0.0, 'nme_mean_bootstrap_95ci': (0.01868, 0.02006)}}
+{'baseline_mean_shape_image': {'images': 102, 'detected': 102, 'detection_rate': 1.0, 'nme_mean': 0.1532, 'nme_median': 0.12684, 'nme_std': 0.09125, 'nme_p90': 0.25363, 'nme_max': 0.52274, 'failure_rate_at_0.10': 0.7059}}
+{'baseline_mean_shape_detector_box': {'images': 102, 'detected': 102, 'detection_rate': 1.0, 'nme_mean': 0.0752, 'nme_median': 0.06602, 'nme_std': 0.03336, 'nme_p90': 0.1147, 'nme_max': 0.19401, 'failure_rate_at_0.10': 0.1961}}
+{'per_point': {'point': 'chin_bottom_centre', 'template_index': 129, 'mediapipe_index': 152, 'mean_error_iod': 0.0389}}
+{'per_point': {'point': 'subnasale', 'template_index': 55, 'mediapipe_index': 2, 'mean_error_iod': 0.0295}}
+{'per_point': {'point': 'right_eye_outer_corner', 'template_index': 18, 'mediapipe_index': 33, 'mean_error_iod': 0.0199}}
+{'per_point': {'point': 'right_eye_inner_corner', 'template_index': 22, 'mediapipe_index': 133, 'mean_error_iod': 0.0196}}
+{'per_point': {'point': 'lower_lip_bottom_centre', 'template_index': 106, 'mediapipe_index': 17, 'mean_error_iod': 0.0196}}
+{'per_point': {'point': 'mouth_right_corner', 'template_index': 87, 'mediapipe_index': 61, 'mean_error_iod': 0.0185}}
+{'per_point': {'point': 'left_eye_outer_corner', 'template_index': 27, 'mediapipe_index': 263, 'mean_error_iod': 0.0179}}
+{'per_point': {'point': 'left_iris_centre', 'template_index': 1, 'mediapipe_index': 473, 'mean_error_iod': 0.0177}}
+{'per_point': {'point': 'mouth_left_corner', 'template_index': 93, 'mediapipe_index': 291, 'mean_error_iod': 0.0162}}
+{'per_point': {'point': 'right_iris_centre', 'template_index': 0, 'mediapipe_index': 468, 'mean_error_iod': 0.0158}}
+{'per_point': {'point': 'upper_lip_top_centre', 'template_index': 90, 'mediapipe_index': 0, 'mean_error_iod': 0.0157}}
+{'per_point': {'point': 'left_eye_inner_corner', 'template_index': 23, 'mediapipe_index': 362, 'mean_error_iod': 0.0146}}
+{'per_point': {'point': 'lower_lip_top_centre', 'template_index': 101, 'mediapipe_index': 14, 'mean_error_iod': 0.0138}}
+{'per_point': {'point': 'upper_lip_bottom_centre', 'template_index': 96, 'mediapipe_index': 13, 'mean_error_iod': 0.0136}}
+{'group_factor': 'gender', 'groups': {'female': {'n': 49, 'nme_mean': 0.018, 'nme_median': 0.0177}, 'male': {'n': 53, 'nme_mean': 0.0206, 'nme_median': 0.0208}}}
+{'group_factor': 'ethnicity', 'groups': {'black': {'n': 13, 'nme_mean': 0.0224, 'nme_median': 0.0219}, 'east_asian': {'n': 9, 'nme_mean': 0.0192, 'nme_median': 0.0195}, 'east_asian/white': {'n': 1, 'nme_mean': 0.0148, 'nme_median': 0.0148}, 'west_asian': {'n': 10, 'nme_mean': 0.0167, 'nme_median': 0.0158}, 'white': {'n': 69, 'nme_mean': 0.0193, 'nme_median': 0.0193}}}
+{'group_factor': 'age_band', 'groups': {'18-24': {'n': 42, 'nme_mean': 0.0199, 'nme_median': 0.0195}, '25-34': {'n': 41, 'nme_mean': 0.0194, 'nme_median': 0.0196}, '35+': {'n': 17, 'nme_mean': 0.0184, 'nme_median': 0.0188}, 'not reported': {'n': 2, 'nme_mean': 0.0166, 'nme_median': 0.0166}}}
+{'seconds': 40.0, 'written': ['mediapipe_face_landmarker_evaluation_per_image.csv', 'mediapipe_face_landmarker_ced.png', 'mediapipe_face_landmarker_evaluation_examples.jpg']}
+{'stage': 'evaluate', 'status': 'ok', 'seconds': 40.8}
+Cumulative error distribution: the model and the two baselines -> /content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_ced.png
+<IPython.core.display.Image object>
+
+[Image saved to: /tmp/tmpgullzht3.png]
+Top: three typical faces; bottom: the three largest errors. Orange rings: model; cyan crosses: annotation -> /content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_evaluation_examples.jpg
+<IPython.core.display.Image object>
+
+[Image saved to: /tmp/tmpr1yh961p.jpeg]
+[colab] Executing cell 8/13 - mediapipe_face_landmarker-27...
+Running stage 'robustness' in the isolated environment; log: /content/outputs/mediapipe_face_landmarker/9b20fc37221e/logs/robustness.log
+{'perturbation': 'none', 'value': 0.0, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.0, 'annotation_nme_mean': 0.02}
+{'perturbation': 'rotate', 'value': 15.0, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.0068, 'annotation_nme_mean': 0.0209}
+{'perturbation': 'rotate', 'value': 30.0, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.013, 'annotation_nme_mean': 0.024}
+{'perturbation': 'rotate', 'value': 45.0, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.022, 'annotation_nme_mean': 0.0305}
+{'perturbation': 'rotate', 'value': 90.0, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.0138, 'annotation_nme_mean': 0.0245}
+{'perturbation': 'rotate', 'value': 180.0, 'faces': 20, 'detection_rate': 0.9, 'failure_rate_at_0.10': 0.9, 'consistency_nme_mean': 1.6566, 'annotation_nme_mean': 1.6589}
+{'perturbation': 'scale', 'value': 0.5, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.0042, 'annotation_nme_mean': 0.0191}
+{'perturbation': 'scale', 'value': 0.25, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.0109, 'annotation_nme_mean': 0.0194}
+{'perturbation': 'scale', 'value': 0.12, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.0266, 'annotation_nme_mean': 0.0271}
+{'perturbation': 'blur', 'value': 2.0, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.0039, 'annotation_nme_mean': 0.02}
+{'perturbation': 'blur', 'value': 6.0, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.0136, 'annotation_nme_mean': 0.0228}
+{'perturbation': 'blur', 'value': 12.0, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.0342, 'annotation_nme_mean': 0.0362}
+{'perturbation': 'brightness', 'value': 0.35, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.0054, 'annotation_nme_mean': 0.0204}
+{'perturbation': 'brightness', 'value': 1.8, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.0069, 'annotation_nme_mean': 0.0206}
+{'perturbation': 'jpeg', 'value': 20.0, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.0044, 'annotation_nme_mean': 0.0205}
+{'perturbation': 'jpeg', 'value': 5.0, 'faces': 20, 'detection_rate': 1.0, 'failure_rate_at_0.10': 0.0, 'consistency_nme_mean': 0.0122, 'annotation_nme_mean': 0.0236}
+{'stage': 'robustness', 'status': 'ok', 'seconds': 31.2}
+One face under four perturbations, with the predicted landmarks -> /content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_robustness_examples.jpg
+<IPython.core.display.Image object>
+
+[Image saved to: /tmp/tmpfzw0ij_g.jpeg]
+[colab] Executing cell 9/13 - mediapipe_face_landmarker-30...
+Running stage 'blendshapes' in the isolated environment; log: /content/outputs/mediapipe_face_landmarker/9b20fc37221e/logs/blendshapes.log
+{'pairs_with_a_face_in_both': 102, 'of': 102}
+{'stated_expectation': 'mean(mouthSmileLeft, mouthSmileRight) is higher on the smiling photograph than on the neutral one', 'pairs': 102, 'expressive_higher': 102, 'fraction_expressive_higher': 1.0, 'median_neutral': 0.0016, 'median_expressive': 0.6378, 'median_paired_difference': 0.5724, 'rank_auc': 0.948, 'sign_test_p': 3.944304526105059e-31}
+{'descriptive': 'cheekSquint', 'median_neutral': 0.0, 'median_smiling': 0.0, 'fraction_smiling_higher': 0.8039, 'rank_auc': 0.7505}
+{'descriptive': 'eyeSquint', 'median_neutral': 0.2538, 'median_smiling': 0.367, 'fraction_smiling_higher': 0.8922, 'rank_auc': 0.7363}
+{'descriptive': 'eyeBlink', 'median_neutral': 0.0898, 'median_smiling': 0.1312, 'fraction_smiling_higher': 0.9118, 'rank_auc': 0.6822}
+{'descriptive': 'jawOpen', 'median_neutral': 0.0022, 'median_smiling': 0.0036, 'fraction_smiling_higher': 0.5882, 'rank_auc': 0.6304}
+{'descriptive': 'mouthClose', 'median_neutral': 0.0006, 'median_smiling': 0.0008, 'fraction_smiling_higher': 0.549, 'rank_auc': 0.5607}
+{'score_semantics': 'Blendshape scores are network outputs in [0, 1] that drive an avatar rig; they are not calibrated probabilities that an expression is present, and the pipeline applies no threshold to them.'}
+{'stage': 'blendshapes', 'status': 'ok', 'seconds': 10.9}
+Smile score for each person, neutral vs smiling (grey: rose; red: fell) -> /content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_smile_pairs.png
+<IPython.core.display.Image object>
+
+[Image saved to: /tmp/tmpkleyjtcs.png]
+[colab] Executing cell 10/13 - mediapipe_face_landmarker-33...
+Running stage 'newdata' in the isolated environment; log: /content/outputs/mediapipe_face_landmarker/9b20fc37221e/logs/newdata.log
+{'image_id': 'composite/f_african', 'faces': 1, 'top_blendshapes': {'browOuterUpLeft': 0.531, 'mouthPucker': 0.478, 'browOuterUpRight': 0.357}, 'nme_vs_template': 0.0182}
+{'image_id': 'composite/f_easian', 'faces': 1, 'top_blendshapes': {'eyeSquintLeft': 0.192, 'eyeSquintRight': 0.191, 'eyeLookInRight': 0.164}, 'nme_vs_template': 0.0157}
+{'image_id': 'composite/f_multi', 'faces': 1, 'top_blendshapes': {'eyeSquintLeft': 0.227, 'eyeSquintRight': 0.19, 'browOuterUpLeft': 0.16}, 'nme_vs_template': 0.0129}
+{'image_id': 'composite/f_wasian', 'faces': 1, 'top_blendshapes': {'mouthShrugLower': 0.397, 'mouthShrugUpper': 0.263, 'eyeSquintLeft': 0.209}, 'nme_vs_template': 0.0098}
+{'image_id': 'composite/f_white', 'faces': 1, 'top_blendshapes': {'eyeSquintRight': 0.183, 'eyeSquintLeft': 0.178, 'eyeLookDownLeft': 0.15}, 'nme_vs_template': 0.014}
+{'image_id': 'composite/m_african', 'faces': 1, 'top_blendshapes': {'browOuterUpLeft': 0.452, 'browInnerUp': 0.408, 'eyeLookDownLeft': 0.315}, 'nme_vs_template': 0.0152}
+{'image_id': 'composite/m_easian', 'faces': 1, 'top_blendshapes': {'eyeSquintLeft': 0.499, 'eyeSquintRight': 0.403, 'eyeLookUpLeft': 0.219}, 'nme_vs_template': 0.0163}
+{'image_id': 'composite/m_multi', 'faces': 1, 'top_blendshapes': {'eyeSquintLeft': 0.326, 'eyeSquintRight': 0.291, 'eyeBlinkLeft': 0.189}, 'nme_vs_template': 0.0125}
+{'image_id': 'composite/m_wasian', 'faces': 1, 'top_blendshapes': {'eyeSquintLeft': 0.454, 'browDownLeft': 0.413, 'browDownRight': 0.409}, 'nme_vs_template': 0.0141}
+{'image_id': 'composite/m_white', 'faces': 1, 'top_blendshapes': {'mouthShrugLower': 0.516, 'eyeSquintLeft': 0.396, 'mouthPressLeft': 0.369}, 'nme_vs_template': 0.0145}
+{'composite_nme': {'images': 10, 'detected': 10, 'detection_rate': 1.0, 'nme_mean': 0.01432, 'nme_median': 0.01431, 'nme_std': 0.0023, 'nme_p90': 0.0165, 'nme_max': 0.01818, 'failure_rate_at_0.10': 0.0}, 'written': {'landmarks_csv': '/content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_newdata_landmarks.csv', 'blendshapes_csv': '/content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_newdata_blendshapes.csv', 'matrices_json': '/content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_newdata_matrices.json'}}
+{'video_mode_demo': {'IMAGE': {'frames': 30, 'tracked': 30, 'nme_vs_true_motion_mean': 0.0105, 'jitter_after_motion_removed': 0.002, 'self_consistency_nme_mean': 0.0039}, 'VIDEO': {'frames': 30, 'tracked': 30, 'nme_vs_true_motion_mean': 0.0168, 'jitter_after_motion_removed': 0.0039, 'self_consistency_nme_mean': 0.0118}}, 'motion': 'in-plane rotation of ±8° over 30 frames at 30 fps', 'reference': "the composite's own annotation moved by the known rotation", 'still_prediction_nme_vs_annotation': 0.0103}
+{'stage': 'newdata', 'status': 'ok', 'seconds': 4.8}
+New images: ten composite faces with their landmarks -> /content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_newdata_overlays.jpg
+<IPython.core.display.Image object>
+
+[Image saved to: /tmp/tmptrhszgbw.jpeg]
+[colab] Executing cell 11/13 - mediapipe_face_landmarker-36...
+Running stage 'export' in the isolated environment; log: /content/outputs/mediapipe_face_landmarker/9b20fc37221e/logs/export.log
+{'result': '/content/outputs/mediapipe_face_landmarker/9b20fc37221e/outputs/mediapipe_face_landmarker_result.json', 'run_id': '9b20fc37221e', 'model': 'mediapipe-models/face_landmarker/face_landmarker', 'revision': '1683136941916318', 'sha256': '64184e229b263107…', 'runtime': {'python': '3.12.12', 'mediapipe': '1.0.0', 'numpy': '2.5.3', 'pillow': '12.3.0', 'machine': 'x86_64', 'cpu_count': 2, 'delegate': 'CPU (TFLite XNNPACK)'}}
+{'file': 'blendshapes.json', 'bytes': 2112, 'sha256': '0823016bbe3162c2…'}
+{'file': 'evaluation.json', 'bytes': 4444, 'sha256': '31c311f688750c0e…'}
+{'file': 'inference.json', 'bytes': 1092, 'sha256': '6a91abbaaa16497a…'}
+{'file': 'mediapipe_face_landmarker_blendshapes_paired.csv', 'bytes': 13785, 'sha256': 'afe02d70288101d6…'}
+{'file': 'mediapipe_face_landmarker_ced.png', 'bytes': 41023, 'sha256': 'cb0a420c6286622b…'}
+{'file': 'mediapipe_face_landmarker_evaluation_examples.jpg', 'bytes': 157530, 'sha256': '181e7e8b4d77a285…'}
+{'file': 'mediapipe_face_landmarker_evaluation_per_image.csv', 'bytes': 7254, 'sha256': '2dfc616c7e9f8ecd…'}
+{'file': 'mediapipe_face_landmarker_newdata_blendshapes.csv', 'bytes': 24651, 'sha256': '0a34516c152a1ee0…'}
+{'file': 'mediapipe_face_landmarker_newdata_landmarks.csv', 'bytes': 348469, 'sha256': 'a9bbfd0c45023a5e…'}
+{'file': 'mediapipe_face_landmarker_newdata_matrices.json', 'bytes': 4238, 'sha256': '846a6ddf59e06cd7…'}
+{'file': 'mediapipe_face_landmarker_newdata_overlays.jpg', 'bytes': 134569, 'sha256': 'ef99b8d220a5d3da…'}
+{'file': 'mediapipe_face_landmarker_robustness.csv', 'bytes': 689, 'sha256': '4db2eb6c02412a0b…'}
+{'file': 'mediapipe_face_landmarker_robustness_examples.jpg', 'bytes': 65550, 'sha256': '2693d0834fd2ee0a…'}
+{'file': 'mediapipe_face_landmarker_sample_manifest.csv', 'bytes': 28292, 'sha256': 'c174ea894c72cc63…'}
+{'file': 'mediapipe_face_landmarker_smile_pairs.png', 'bytes': 116478, 'sha256': '28c1f87cd1bc477b…'}
+{'file': 'mediapipe_face_landmarker_two_faces_overlay.jpg', 'bytes': 71652, 'sha256': '55ed73a44d9b2bed…'}
+{'file': 'mediapipe_face_landmarker_walkthrough_blendshapes.csv', 'bytes': 2313, 'sha256': '93de01df4a8549d3…'}
+{'file': 'mediapipe_face_landmarker_walkthrough_landmarks.csv', 'bytes': 33096, 'sha256': 'e2b9f47ad54a768d…'}
+{'file': 'mediapipe_face_landmarker_walkthrough_matrices.json', 'bytes': 422, 'sha256': 'c3f96aa28f173b56…'}
+{'file': 'mediapipe_face_landmarker_walkthrough_overlay.jpg', 'bytes': 137105, 'sha256': '0e366d1efee83131…'}
+{'file': 'newdata.json', 'bytes': 2992, 'sha256': '95bdd6996a6e7f9f…'}
+{'file': 'prepare.json', 'bytes': 897, 'sha256': '9261a8d05f684667…'}
+{'file': 'robustness.json', 'bytes': 4250, 'sha256': 'e100652e28bd6dbd…'}
+{'file': 'weights.json', 'bytes': 1173, 'sha256': '1a0d0662c8165bef…'}
+{'stage': 'export', 'status': 'ok', 'seconds': 0.2}
+[colab] Executing cell 12/13 - mediapipe_face_landmarker-39...
+{'byod': 'skipped (optional)', 'to_run': 'set USE_BYOD = True, and BYOD_PATH to an image or zip in the runtime (or leave it empty for the Colab upload dialog), then run this cell'}
+[colab] Executing cell 13/13 - mediapipe_face_landmarker-42...
+{'activity': 'skipped (optional)', 'to_run': 'set RUN_ACTIVITY = True and ACTIVITY_ROTATION in -180..180, then run this cell'}
+[colab] Saving notebook with outputs to '/home/kurt/colab-runs/mediapipe-face-landmarker-pipeline-7c0f9a2-ecf34e/mediapipe_face_landmarker_colab_7c0f9a2_colab-cli-t4_output.ipynb'...
