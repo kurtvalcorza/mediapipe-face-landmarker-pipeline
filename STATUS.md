@@ -8,6 +8,10 @@ Current status: **Candidate** — the `TASK-INFERENCE` / `GUIDED` notebook `tuto
 2. Maintainer confirmation that the DIMER upload path accepts the upstream `.task` bundle unchanged (`docs/WEIGHTS.md` §3); `.task` is not one of the upload formats the fleet inventory lists.
 3. Confirmation of the upstream publication date: the card records 2023-05-03, the upload time of the pinned object generation, because no public source for a later announcement date was checked here.
 
+## Recorded runs since the review fixes
+
+- **Executed (Google Colab T4, 2026-10-10):** a one-pass default run of the review-fix blob `3f4143f` (commit `7c0f9a2`, MPF-m1..m5) on a fresh session with the Colab CLI: 13/13 code cells, no error, no restart; every metric equals the 2026-10-04 run. Evidence in `docs/execution-evidence/2026-10-10-7c0f9a2/`. Status stays Candidate: the hosted BYOD journey (item 1 above) is still open.
+
 ## What is in place
 
 - Bundle pinned by Cloud Storage object generation `1683136941916318`, size and SHA-256, with each of the four zip members verified before every load; no fallback source.

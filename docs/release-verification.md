@@ -39,6 +39,32 @@ The model itself is not executed in CI. It is executed by running the notebook, 
 
 ## Recorded executions
 
+### Google Colab hosted runtime, 2026-10-10 (default path, review-fix blob)
+
+- **Subject:** `tutorials/mediapipe_face_landmarker_colab.ipynb`, git blob `3f4143f4d1aebb0636501c0ce30b394a4b3b5a78`,
+  generated from the review-fix generator (MPF-m1..m5) at commit `7c0f9a2c34b9d632dfc5decbad9f696c47f9ecde`
+  (branch `ccr-24656dfc-ax1ln2`). Every code cell of the executed copy is byte-identical to that blob. Evidence in
+  `docs/execution-evidence/2026-10-10-7c0f9a2/`: the executed copy
+  `mediapipe_face_landmarker_colab_7c0f9a2_colab-cli-t4_output.ipynb` (SHA-256
+  `caee70a524dbc9d333e953085adf9a34402bd989e87d631f5d7b8df59cc69b8d`), `exec.log` (SHA-256
+  `0034042c560a0b938252436b99f8a5291aaa17c899b7cb2d8c862f3685322244`) and `run_summary.json` (SHA-256
+  `5cd82368d498d3a7e2ad9e90dc66fe2964e332d2a6878fe0171a449faca26fc4`).
+- **Executor:** Colab CLI 0.7.4 sequential execution (`colab exec -f`) on a fresh Google Colab session with a Tesla T4
+  attached — not a browser `Run all`. The notebook does not use the GPU: MediaPipe ran on the CPU delegate (TFLite
+  XNNPACK), 2 vCPUs, x86_64. Stages: CPython 3.12.12 managed by `uv`, the carried 19-package lock, built in 9 s
+  (`environment_reused: False`).
+- **Procedure:** every code cell in order with defaults unchanged (`USE_BYOD = False`, `RUN_ACTIVITY = False`).
+- **Observed result:** 13/13 code cells completed in one pass, no error, no restart, no credential and no upload dialog.
+  Stage times: weights 0.4 s, prepare 15.4 s, inference 2.5 s, evaluate 40.8 s, robustness 31.2 s, blendshapes 10.9 s,
+  newdata 4.8 s, export 0.2 s (106 s in stages). Every printed metric equals the 2026-10-04 run: `nme_mean` 0.01937
+  (95 % bootstrap [0.01868, 0.02006]), detection 102/102, baselines 0.0752 and 0.1532, rotation 180° detection 0.9 and
+  failure 0.9, smile score higher in 102/102 pairs, composite-face NME mean 0.01432. The MPF-m2 VIDEO comparison
+  against the annotation moved by the known rotation: IMAGE 0.0105, VIDEO 0.0168 (jitter 0.0020 / 0.0039; still
+  prediction 0.0103). `result.json` carries `run_id`, `stage_seconds` and the `files` inventory (MPF-m3).
+- **Caveats:** the BYOD branch (REL12, including the upload dialog), the activity, a Section 1 re-run and a second
+  `Run all` in the same runtime (MPF-m5) were not exercised. One pass. The prose quotes the 2026-10-04 run's timings
+  (13 s environment, 89 s in stages); this run took 9 s and 106 s.
+
 ### Google Colab hosted runtime, 2026-10-04 (default path)
 
 - **Subject:** `tutorials/mediapipe_face_landmarker_colab.ipynb`, git blob `9b8a54dcc45294998578e00dcb7d67e0a27b6203`,

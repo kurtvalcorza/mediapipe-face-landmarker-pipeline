@@ -72,7 +72,7 @@ The notebook installs nothing into its own kernel. It downloads a pinned `uv` wh
 
 ## Release status
 
-**Candidate** — the notebook's default path, the BYOD branch (two compatible and two incompatible inputs) and the optional activity were executed end to end in a local CPU-only Linux container, and a fresh Google Colab runtime completed `Run all` of the same notebook in one pass with identical results. The hosted BYOD journey (REL12), including the upload dialog, is not yet recorded, and `.task` acceptance by the DIMER upload path is an open item (`docs/WEIGHTS.md` §3). See `STATUS.md` and `docs/release-verification.md`.
+**Candidate** — the notebook's default path, the BYOD branch (two compatible and two incompatible inputs) and the optional activity were executed end to end in a local CPU-only Linux container, and a fresh Google Colab runtime completed `Run all` of the same notebook in one pass with identical results. The review-fix notebook (blob `3f4143f`, commit `7c0f9a2`) then completed a one-pass default run on a fresh Colab session on 2026-10-10 (Colab CLI, 13/13 code cells), again with identical metrics. The hosted BYOD journey (REL12), including the upload dialog, is not yet recorded, and `.task` acceptance by the DIMER upload path is an open item (`docs/WEIGHTS.md` §3). See `STATUS.md` and `docs/release-verification.md`.
 
 ## AI Assistance Disclosure
 
