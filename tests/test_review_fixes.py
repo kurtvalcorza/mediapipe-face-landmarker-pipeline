@@ -62,6 +62,7 @@ def _run_check_cell(namespace: dict) -> dict:
     return namespace
 
 
+@pytest.mark.skipif(sys.platform != "linux", reason="executes the Section 1/3 kernel cells, which refuse a non-Linux x86_64 runtime and run a POSIX venv/bin/python (Linux runtimes only)")
 def test_mpf_m5_section1_rerun_keeps_the_run_directory(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     namespace = _run_check_cell({})
@@ -76,6 +77,7 @@ def test_mpf_m5_section1_rerun_keeps_the_run_directory(tmp_path: Path, monkeypat
     assert namespace["ROOT"] != first
 
 
+@pytest.mark.skipif(sys.platform != "linux", reason="executes the Section 1/3 kernel cells, which refuse a non-Linux x86_64 runtime and run a POSIX venv/bin/python (Linux runtimes only)")
 def test_mpf_m5_environment_is_keyed_on_the_lock_not_the_run(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     a = _run_check_cell({})
@@ -96,6 +98,7 @@ def _fake_ipython(monkeypatch) -> None:
     monkeypatch.setitem(sys.modules, "IPython.display", display)
 
 
+@pytest.mark.skipif(sys.platform != "linux", reason="executes the Section 1/3 kernel cells, which refuse a non-Linux x86_64 runtime and run a POSIX venv/bin/python (Linux runtimes only)")
 def test_mpf_m5_install_cell_reuses_a_complete_environment_without_downloading(tmp_path: Path, monkeypatch) -> None:
     _fake_ipython(monkeypatch)
     _carrier, install = _infrastructure_sources()
@@ -196,3 +199,19 @@ def test_mpf_m4_byod_zip_skips_and_reports_non_images_and_keeps_inputs_out_of_ou
     broken = _zip(tmp_path / "broken.zip", {"photos/bad.jpg": b"not an image"})
     with pytest.raises(ValueError, match=r"^photos/bad\.jpg: not a decodable image"):
         run("byod", byod=str(broken))
+
+
+# ---- stage-process import boundary (cloud-PR check, 2026-10-10) ---------------------------------------------------
+
+
+def test_stage_processes_import_neither_ipython_nor_google() -> None:
+    """Stages run as `tutorial_stages.py` subprocesses in the isolated environment, which has neither IPython nor
+    google.colab: only kernel cells use them (`IPython.display` in the install cell, the BYOD upload dialog). A carried
+    module that imported either would fail on Colab; there is no worker and no google.colab stub to give a ModuleSpec."""
+    carried = [ROOT / source for dest, source in TEMPLATE["carried"].items() if dest.endswith(".py")]
+    assert any(path.name == "tutorial_stages.py" for path in carried)
+    offenders = [str(path) for path in carried if re.search(r"^\s*(from|import)\s+(IPython|google)\b", path.read_text(encoding="utf-8"), re.M)]
+    assert not offenders, offenders
+    sources = "\n".join("".join(cell["source"]) for cell in json.loads(NOTEBOOK.read_text(encoding="utf-8"))["cells"])
+    stubs = ("sys.modules['google", 'sys.modules["google', "ModuleType('google", 'ModuleType("google')
+    assert not [marker for marker in stubs if marker in sources]
