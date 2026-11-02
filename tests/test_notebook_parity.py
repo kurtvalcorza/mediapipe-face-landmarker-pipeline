@@ -85,7 +85,7 @@ def test_par2_carried_lock_is_the_committed_lock_and_pins_pyproject(notebook: di
     assert files[TEMPLATE["lock"]] == lock_text
     build.check_lock(build._pins(ROOT), lock_text)  # every direct pin at its version, every entry hashed
     locked = build.lock_packages(lock_text)
-    assert locked["mediapipe"] == "1.0.0" and locked["numpy"] == "2.5.3" and locked["pillow"] == "12.3.0"
+    assert locked["mediapipe"] == "1.0.0" and locked["numpy"] == "2.5.3" and locked["pillow"] == "13.0.0"
     assert "torch" not in locked and "jax" not in locked
     assert "--only-binary :all:" in lock_text.splitlines()[1], "the lock must be compiled wheel-only"
 
