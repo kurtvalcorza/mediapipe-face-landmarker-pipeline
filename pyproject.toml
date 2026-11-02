@@ -9,7 +9,7 @@ authors = [{ name = "Kurt Valcorza" }]
 dependencies = [
   "mediapipe==1.0.0",
   "numpy==2.5.3",
-  "pillow==12.3.0",
+  "pillow==13.0.0",
 ]
 [project.optional-dependencies]
 dev = ["pytest==8.4.2", "ruff==0.16.6"]
