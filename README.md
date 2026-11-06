@@ -11,7 +11,7 @@ DIMER-oriented pipeline for the **MediaPipe Face Landmarker** task bundle (`medi
 - Bundle digest: 3,758,596 bytes, SHA-256 `64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff`
 - Bundle members: `face_detector.tflite` (BlazeFace short range), `face_landmarks_detector.tflite` (478-point face mesh), `face_blendshapes.tflite` (52 blendshapes), `geometry_pipeline_metadata_landmarks.binarypb` (canonical face for the transformation matrix)
 - Upstream licence: **Apache-2.0**
-- Runtime: `mediapipe==1.0.0` (Tasks API `FaceLandmarker`) + `numpy==2.5.3` + `pillow==12.3.0`, CPU (TFLite XNNPACK), float16 weights; nothing is unpickled and no code is downloaded with the model
+- Runtime: `mediapipe==1.0.0` (Tasks API `FaceLandmarker`) + `numpy==2.5.3` + `pillow==13.0.0`, CPU (TFLite XNNPACK), float16 weights; nothing is unpickled and no code is downloaded with the model
 - Repository adaptation: **none** — the bundle is a fixed edge model; the tutorial is `TASK-INFERENCE`
 
 ## Quick start
